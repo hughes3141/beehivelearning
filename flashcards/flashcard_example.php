@@ -31,8 +31,9 @@ if ($conn->connect_error) {
   die("Connection failed: " . $conn->connect_error);
 }
 
-
+echo "<br>Post:";
 print_r($_POST);
+
 
 //Insert response into database
 $stmt = $conn->prepare("INSERT INTO flashcard_responses (questionId,  userId, gotRight) VALUES (?, ?, ?)");
@@ -52,10 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 
   
 }
-
 ?>
-
-
 
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
@@ -70,11 +68,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="">
+    <style>
+      #flashcard {
+        border: 1px solid black;
+        margin: 5px;
+        padding: 10px;
+      }
+    </style>
   </head>
   <body>
     <!--[if lt IE 7]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
+
 
     <?php 
     $path = $_SERVER['DOCUMENT_ROOT'];;
@@ -82,11 +88,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
     include $path;
     ?>
 
-    <h1>Flashcard Exercise</h1>
+
+    <h1>Flashcard Example</h1>
 
     <?php
 
-      //Find the teacher of the group the student is in
+    //Find the teacher of the group the student is in
       //Note: this will need to be changed to refledct that multiple teachers may teach a group
 
       $sql="SELECT * FROM groups WHERE id = ?";
@@ -113,10 +120,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
       //echo "<br>".$teacher;
 
 
+
+
+      //Array of questions set by the teacher:
+
+      $questions = array();
       //Select questions made by the teacher
-
-
-      $sql="SELECT * FROM saq_question_bank_3 WHERE userCreate = ?";
+      $sql="SELECT * FROM saq_question_bank_3 WHERE userCreate = ? AND model_answer <> ''";
+      #just using "AND model_answer <> ''" so we return cards with answers
       $stmt = $conn->prepare($sql);
       $stmt->bind_param("i", $teacher);
       $stmt->execute();
@@ -125,6 +136,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
         while ($row=$result->fetch_assoc()) {
           //print_r($row);
 
+          array_push($questions, $row);
+
+          /*
           echo "<h3>".$row['question']."</h3>";
           echo "<p>Topic: ".$row['topic']."</p>";
           echo "<p>Answer: ".$row['model_answer']."</p>";
@@ -134,15 +148,38 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
           echo "<button name='rightWrong' value = '1'>Got Right</button><br>";
           echo "<input type='hidden' name='questionId' value = '".$row['id']."'>";
           echo "</form>";
+          */
           
         }
       }
 
 
+      //print_r($questions);
+      $qCount = count($questions);
+
+      echo $qCount;
+      echo "<br>";
+      $randomQuestion = rand(0, $qCount-1);
+      echo $randomQuestion;
+
     ?>
 
+    <div id="flashcard">
+    Here is a flashcard
+    <form method="post">
+    <input type="hidden" name="questionId" value = "<?=$questions[$randomQuestion]['id']?>"
+    <p><?php echo $questions[$randomQuestion]['question'];?></p>
+    <button value ="0" name="rightWrong">I don't know</button>
+    <button type = "button">Show answers</button>
+    <div>
+      <p>Answer: <?=$questions[$randomQuestion]['model_answer'];?></p>
+      <button value ="1" name="rightWrong">Wrong Answer</button>
+      <button value ="2" name="rightWrong">Correct Answer</button>
+    </div>
 
-   
+    </form>
+
+    </div>
     
     <script src="" async defer></script>
   </body>

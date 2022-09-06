@@ -152,6 +152,13 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 
 
  <?php //include "header_tailwind.php"; ?>
+
+ <?php 
+    $path = $_SERVER['DOCUMENT_ROOT'];;
+    $path = $path."/navbar.php";
+    include $path;
+    ?>
+    
  <div class="container mx-auto px-4 mt-20 lg:w-1/2">
 <body>
   <h1 class="font-mono text-2xl bg-pink-400 pl-1">User Login</h1>

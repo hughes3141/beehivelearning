@@ -106,6 +106,12 @@ if (isset($_POST['submit'])) {
 
       ?>
 
+    <?php 
+    $path = $_SERVER['DOCUMENT_ROOT'];;
+    $path = $path."/navbar.php";
+    include $path;
+    ?>
+
     <h1>Application Manager</h1>
 
     <h2>Add Questions</h2>

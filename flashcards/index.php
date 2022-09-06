@@ -17,11 +17,17 @@
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
 
+    <?php 
+    $path = $_SERVER['DOCUMENT_ROOT'];;
+    $path = $path."/navbar.php";
+    include $path;
+    ?>
 
     <h1>Flashcards</h1>
     <ul>
       <li><a href="manager.php">Application Manager</a></li>
       <li><a href="flashcard_exercise.php">Flashcard User</a></li>
+      <li><a href="flashcard_example.php">Flashcard Example</a></li>
     </ul>
 
     <a href="../logout.php">Log Off</a>
