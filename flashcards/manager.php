@@ -112,29 +112,54 @@ if (isset($_POST['submit'])) {
     <p>Use the form below to enter questions.</p>
     <form method="post">
       <table id="question_input_table">
-      <tr>
-        <th>Topic</th>
+        <tr>
+          <th>Topic</th>
+          
+          <th>Question</th>
+                  <!--
+                  <th>img src</th>
+                  <th>Points</th>
+                  <th>Source</th>
+              -->
+          <th>Model Answer/Mark Scheme</th>
         
-        <th>Question</th>
-        <!--
-        <th>img src</th>
-        <th>Points</th>
-        <th>Source</th>
-    -->
-        <th>Model Answer/Mark Scheme</th>
-      
-      </tr>
-    </table>
-    <p>
-      <button type = "button" onclick="addRow()">Add Row</button>
-    </p>
-    <p>
-      <input type="submit" name="submit" value="Create Question"></input>
-    </p>
+        </tr>
+      </table>
+      <p>
+        <button type = "button" onclick="addRow()">Add Row</button>
+      </p>
+      <p>
+        <input type="submit" name="submit" value="Create Question"></input>
+      </p>
+      <input type="hidden" name="questionsCount" id="questionsCount">
     
-    <input type="hidden" name="questionsCount" id="questionsCount">
+    </form>
+
+    <h2>Assignment Creator</h2>
+    <select>
     
-  </form>
+
+      <?php
+        $teacherid = $_SESSION['userid'];
+        echo $teacherid;
+        $teacheridsql= '%\"'.$teacherid.'\"%';
+        $sql= "SELECT * FROM groups WHERE teachers LIKE ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $teacheridsql);
+        $stmt->execute();
+        $result= $stmt->get_result();
+
+        if($result->num_rows >0) {
+          while($row=$result->fetch_assoc()) {
+            //print_r($row);
+            echo "<option value=".$row['id'].">".$row['name']."</option>";
+          }
+        }
+
+      ?>
+
+
+    </select>
   
 
 

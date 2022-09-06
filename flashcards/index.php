@@ -21,8 +21,10 @@
     <h1>Flashcards</h1>
     <ul>
       <li><a href="manager.php">Application Manager</a></li>
-      <li><a href="">Flashcard User</a></li>
+      <li><a href="flashcard_exercise.php">Flashcard User</a></li>
     </ul>
+
+    <a href="../logout.php">Log Off</a>
     
     <script src="" async defer></script>
   </body>
