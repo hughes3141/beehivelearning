@@ -31,20 +31,52 @@ if ($conn->connect_error) {
   die("Connection failed: " . $conn->connect_error);
 }
 
+
+$userId = $_SESSION['userid'];
+$t = time();
+
+
+
+
+
+
 echo "<br>Post:";
 print_r($_POST);
 
 
 //Insert response into database
-$stmt = $conn->prepare("INSERT INTO flashcard_responses (questionId,  userId, gotRight) VALUES (?, ?, ?)");
-$stmt->bind_param("iii", $questionId, $userId, $gotRight);
+$stmt = $conn->prepare("INSERT INTO flashcard_responses (questionId,  userId, gotRight, timeStart, timeSubmit, cardCategory) VALUES (?, ?, ?, ?, ?, ?)");
+$stmt->bind_param("iiissi", $questionId, $userId, $gotRight, $timeStart, $timeSubmit, $cardCategory);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') 
 
 {
   $questionId = $_POST['questionId'];
-  $userId = $_SESSION['userid'];
   $gotRight = $_POST['rightWrong'];
+  $timeStart = $_POST['timeStart'];
+  
+
+  $timeSubmit = date("Y-m-d h:i:s",$t);
+  echo "<br>".$timeSubmit."<br>";
+
+  
+
+  if($gotRight === "0" || $gotRight === "1") {
+    $cardCategory = 0;
+  }
+  else if ($gotRight = 2) {
+    if ($_POST['cardCategory'] === "0") {
+      $cardCategory = 1;
+    } else if ($_POST['cardCategory'] === "1") {
+      $cardCategory = 2;
+    } else if ($_POST['cardCategory'] === "2") {
+      $cardCategory = 2;
+    }
+  }
+  
+  
+
+  
 
 
   $stmt->execute();
@@ -53,6 +85,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 
   
 }
+
+// Retreive question record.
+
+$sql = "SELECT * FROM flashcard_responses WHERE userId = ? ORDER BY id ASC";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $userId);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if($result->num_rows>0) {
+  while ($row = $result->fetch_assoc()) {
+    /*
+    echo "<br>";
+    print_r($row);
+    */
+    
+  }
+}
+
+echo "<br>";
 ?>
 
 <!DOCTYPE html>
@@ -135,39 +187,81 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
       if($result ->num_rows >0) {
         while ($row=$result->fetch_assoc()) {
           //print_r($row);
+          
+          // Following for testing purposes to isolate to one question, randomly question where id = 613
+          //if($row['id']==613) {array_push($questions, $row);}
+
+          //Push each row into the $questions array.
 
           array_push($questions, $row);
 
-          /*
-          echo "<h3>".$row['question']."</h3>";
-          echo "<p>Topic: ".$row['topic']."</p>";
-          echo "<p>Answer: ".$row['model_answer']."</p>";
-          echo "<form method ='post'>";
-          echo "<button name='rightWrong' value = '0'>Don't know</button><br>";
-          echo "<button name='rightWrong' value = '0'>Got Wrong</button><br>";
-          echo "<button name='rightWrong' value = '1'>Got Right</button><br>";
-          echo "<input type='hidden' name='questionId' value = '".$row['id']."'>";
-          echo "</form>";
-          */
+
           
         }
       }
+
+      
 
 
       //print_r($questions);
       $qCount = count($questions);
 
-      echo $qCount;
-      echo "<br>";
+      
       $randomQuestion = rand(0, $qCount-1);
-      echo $randomQuestion;
+      //echo $qCount."<br>".$randomQuestion;
+
+
+      //Find the response for the last time this question was answered:
+
+        $randomQuestionId = $questions[$randomQuestion]['id'];
+
+        echo "<br>".$randomQuestionId;
+
+        $sql = "SELECT * FROM flashcard_responses WHERE userId = ? AND questionId = ? ORDER BY timeSubmit DESC";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ii", $userId, $randomQuestionId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $row =$result->fetch_assoc();
+        if($row) {
+          //print_r($row);
+          $lastResponse = $row;
+
+        }
+        else {
+          echo "<br>This question has not been attempted yet";
+          $lastResponse = array("cardCategory"=>"0");
+        }
+
+        
+        //print_r($lastResponse);
+        
+
+        /*
+
+        if($result->num_rows>0) {
+          while ($row = $result->fetch_assoc()) {
+            
+            echo "<br>";
+            print_r($row);
+            
+          }
+        }
+        else {
+          echo "<br>This question has not been attempted yet";
+        }
+        */
 
     ?>
 
     <div id="flashcard">
     Here is a flashcard
     <form method="post">
-    <input type="hidden" name="questionId" value = "<?=$questions[$randomQuestion]['id']?>"
+    <input type="hidden" name="questionId" value = "<?=$questions[$randomQuestion]['id']?>">
+    <input type="hidden" name="timeStart" value = "<?=date("Y-m-d h:i:s",time())?>">
+    <input type="hidden" name="cardCategory" value = "<?=$lastResponse['cardCategory']?>">
+    
     <p><?php echo $questions[$randomQuestion]['question'];?></p>
     <button value ="0" name="rightWrong">I don't know</button>
     <button type = "button">Show answers</button>
