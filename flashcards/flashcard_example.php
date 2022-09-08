@@ -20,7 +20,7 @@ $path .= "/../secrets/secrets.php";
 include($path);
 
 
-print_r($_SESSION);
+//print_r($_SESSION);
 
 
 // Create connection
@@ -40,8 +40,8 @@ $t = time();
 
 
 
-echo "<br>Post:";
-print_r($_POST);
+//echo "<br>Post:";
+//print_r($_POST);
 
 
 //Insert response into database
@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
   
 
   $timeSubmit = date("Y-m-d h:i:s",$t);
-  echo "<br>".$timeSubmit."<br>";
+  //echo "<br>".$timeSubmit."<br>";
 
   
 
@@ -81,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 
   $stmt->execute();
     
-  echo "New records created successfully";
+  //echo "New records created successfully";
 
   
 }
@@ -104,7 +104,7 @@ if($result->num_rows>0) {
   }
 }
 
-echo "<br>";
+//echo "<br>";
 ?>
 
 <!DOCTYPE html>
@@ -119,12 +119,41 @@ echo "<br>";
     <title></title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style type="text/tailwindcss">
+    
+    @tailwind base;
+    
+    @tailwind components;
+    
+
+    @layer components {
+      button, button[type=button] {
+        @apply  py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75;
+      }
+
+      a {
+        @apply text-pink-600 bg-blue-200;
+      }
+    }
+
+    @tailwind utilities;
+   
+
+
+  </style>
+
+
+
     <link rel="stylesheet" href="">
     <style>
       #flashcard {
+        /*
         border: 1px solid black;
         margin: 5px;
         padding: 10px;
+        */
       }
     </style>
   </head>
@@ -141,7 +170,7 @@ echo "<br>";
     ?>
 
 
-    <h1>Flashcard Example</h1>
+    <h1 class="hidden">Flashcard Example</h1>
 
     <?php
 
@@ -215,7 +244,7 @@ echo "<br>";
 
         $randomQuestionId = $questions[$randomQuestion]['id'];
 
-        echo "<br>".$randomQuestionId;
+        //echo "<br>".$randomQuestionId;
 
         $sql = "SELECT * FROM flashcard_responses WHERE userId = ? AND questionId = ? ORDER BY timeSubmit DESC";
         $stmt = $conn->prepare($sql);
@@ -230,7 +259,7 @@ echo "<br>";
 
         }
         else {
-          echo "<br>This question has not been attempted yet";
+          //echo "<br>This question has not been attempted yet";
           $lastResponse = array("cardCategory"=>"0");
         }
 
@@ -255,26 +284,51 @@ echo "<br>";
 
     ?>
 
-    <div id="flashcard">
-    Here is a flashcard
-    <form method="post">
-    <input type="hidden" name="questionId" value = "<?=$questions[$randomQuestion]['id']?>">
-    <input type="hidden" name="timeStart" value = "<?=date("Y-m-d h:i:s",time())?>">
-    <input type="hidden" name="cardCategory" value = "<?=$lastResponse['cardCategory']?>">
+    <div id="flashcard" class="font-sans border border-black border-solid p-3 m-2">
     
-    <p><?php echo $questions[$randomQuestion]['question'];?></p>
-    <button value ="0" name="rightWrong">I don't know</button>
-    <button type = "button">Show answers</button>
-    <div>
-      <p>Answer: <?=$questions[$randomQuestion]['model_answer'];?></p>
-      <button value ="1" name="rightWrong">Wrong Answer</button>
-      <button value ="2" name="rightWrong">Correct Answer</button>
-    </div>
+      <form method="post">
+        <h2 class ="text-lg">Question:</h2>
+        <input type="hidden" name="questionId" value = "<?=$questions[$randomQuestion]['id']?>">
+        <input type="hidden" name="timeStart" value = "<?=date("Y-m-d h:i:s",time())?>">
+        <input type="hidden" name="cardCategory" value = "<?=$lastResponse['cardCategory']?>">
+        
+        <p class="mb-3"><?php echo $questions[$randomQuestion]['question'];?></p>
+        
+        <div id="buttonsDiv" class="flex justify-center">
+          <button value ="0" name="rightWrong" class="grow m-3">I don't know</button>
+          <button type = "button" class="grow m-3" onclick="showAnswers();">Show answers</button>
+        </div>
+        
+        <div id ="answerDiv" class="hidden">
+          <h2 class ="text-lg">Answer:</h2>
+          <p class="mb-3"><?=$questions[$randomQuestion]['model_answer'];?></p>
+          <div id ="buttonsDiv2" class="flex justify-center">
+            <button value ="1" name="rightWrong" class="grow m-3">Wrong Answer</button>
+            <button value ="2" name="rightWrong" class="grow m-3">Correct Answer</button>
+           </div>
+        </div>
 
-    </form>
+      </form>
 
     </div>
     
-    <script src="" async defer></script>
+    <script >
+
+      function showAnswers() {
+        var answerDiv = document.getElementById("answerDiv");
+        answerDiv.classList.remove("hidden");
+
+        var buttonsDiv = document.getElementById("buttonsDiv");
+        buttonsDiv.classList.add("hidden");
+
+        
+
+
+
+      }
+
+
+
+    </script>
   </body>
 </html>
