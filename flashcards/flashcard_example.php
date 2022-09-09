@@ -229,15 +229,38 @@ if($result->num_rows>0) {
         }
       }
 
-      
+
 
 
       //print_r($questions);
+
+
+      /*
+      The below loop does the following:
+        -Identifies random question from the $questions array.
+        -Check to see candidate's last response to this question.
+        
+
+      */
+
+      /*
+      
+      while (count($questions)>0) {
+        echo "1 ";
+        array_pop($questions);
+      }
+      */
+
+
       $qCount = count($questions);
 
       
       $randomQuestion = rand(0, $qCount-1);
       //echo $qCount."<br>".$randomQuestion;
+
+      if($randomQuestion<0) {
+        $randomQuestion = 0;
+      }
 
 
       //Find the response for the last time this question was answered:
@@ -260,7 +283,7 @@ if($result->num_rows>0) {
         }
         else {
           //echo "<br>This question has not been attempted yet";
-          $lastResponse = array("cardCategory"=>"0");
+          $lastResponse = array("cardCategory"=>"0", "timeSubmit"=>date("Y-m-d H:i:s", $t));
         }
 
         echo "<br>";
@@ -286,15 +309,25 @@ if($result->num_rows>0) {
 
         //Logic to see if question should appear, based on the bin it is in.
 
-        /*
+        
         //echo $t;
-        echo date("Y-m-d H:i:s", $t);
-        echo "<br>";
-        echo $row['timeSubmit'];
-        echo "<br>";
-        //$now = new DateTime(date("Y-m-d H:i:s", $t));
-        //$last =;
-        */
+        //echo date("Y-m-d H:i:s", $t);       
+        //echo $lastResponse['timeSubmit'];
+
+        $now = new DateTime(date("Y-m-d H:i:s", $t));
+        $last = new DateTime($lastResponse['timeSubmit']);
+        $interval = $now->diff($last);
+        $daysSince = $interval->days;
+        
+        //echo "<br>".$interval->days;
+        //echo "<br>difference " . $interval->y . " years, " . $interval->m." months, ".$interval->d." days ".$interval->h." hours ".$interval->i." minutes ".$interval->s." seconds"; 
+
+
+
+              
+        
+        
+        
 
     ?>
 
