@@ -211,11 +211,11 @@ if (isset($_POST['submit'])) {
 
           cell0.innerHTML = '<label for="topic_'+inst+'">Topic:</label><input id ="topic_'+inst+'" name="topic_'+inst+'" class="topicSelector"></select>';
           
-          cell1.innerHTML = '<label for="question_'+inst+'">Question:</label><textarea type="text" id ="question_'+inst+'" name="question_'+inst+'" required></textarea>';
+          cell1.innerHTML = '<label for="question_'+inst+'">Question:</label><textarea spellcheck="true" type="text" id ="question_'+inst+'" name="question_'+inst+'" required></textarea>';
           //cell2.innerHTML = '<label for="image_'+inst+'">img src:</label><input type="text" id ="image_'+inst+'" name="image_'+inst+'"></input>';
           //cell3.innerHTML = '<label for="points_'+inst+'">Points:</label><input type="number" id ="points_'+inst+'" name="points_'+inst+'"></input>';
           //cell4.innerHTML = '<label for="type_'+inst+'">Source:</label><input type="text" id ="type_'+inst+'" name="type_'+inst+'"></input>';
-          cell5.innerHTML = '<label for="model_answer_'+inst+'">Model Answer/Mark Scheme:</label><textarea type="text" id ="model_answer_'+inst+'" name="model_answer_'+inst+'"></textarea>';
+          cell5.innerHTML = '<label for="model_answer_'+inst+'">Model Answer/Mark Scheme:</label><textarea spellcheck = "true" type="text" id ="model_answer_'+inst+'" name="model_answer_'+inst+'"></textarea>';
           
           //topicListAmend(inst);
           //sourceAmend(inst)

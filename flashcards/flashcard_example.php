@@ -207,7 +207,7 @@ if($result->num_rows>0) {
 
       $questions = array();
       //Select questions made by the teacher
-      $sql="SELECT * FROM saq_question_bank_3 WHERE userCreate = ? AND model_answer <> ''";
+      $sql="SELECT * FROM saq_question_bank_3 WHERE userCreate = ? AND model_answer <> '' /*AND id BETWEEN 550 AND 600*/";
       #just using "AND model_answer <> ''" so we return cards with answers
       $stmt = $conn->prepare($sql);
       $stmt->bind_param("i", $teacher);
@@ -233,98 +233,139 @@ if($result->num_rows>0) {
 
 
       //print_r($questions);
+      echo "<br>Total questions: ".count($questions);
 
 
       /*
       The below loop does the following:
         -Identifies random question from the $questions array.
         -Check to see candidate's last response to this question.
-        
+        -Performs the logic:
+          If(The question is eligible to be answered) : Break loop
+          Else IF (the question is ineligible) : Remove question from $queseetions
 
       */
 
-      /*
+      
       
       while (count($questions)>0) {
-        echo "1 ";
-        array_pop($questions);
-      }
-      */
 
-
-      $qCount = count($questions);
 
       
-      $randomQuestion = rand(0, $qCount-1);
-      //echo $qCount."<br>".$randomQuestion;
 
-      if($randomQuestion<0) {
-        $randomQuestion = 0;
+
+          $qCount = count($questions);
+
+          
+
+          
+          $randomQuestion = rand(0, $qCount-1);
+          //echo $qCount."<br>".$randomQuestion;
+
+          if($randomQuestion<0) {
+            $randomQuestion = 0;
+          }
+
+
+          //Find the response for the last time this question was answered:
+
+            $randomQuestionId = $questions[$randomQuestion]['id'];
+
+            //echo "<br>".$randomQuestionId;
+
+            $sql = "SELECT * FROM flashcard_responses WHERE userId = ? AND questionId = ? ORDER BY timeSubmit DESC";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ii", $userId, $randomQuestionId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            $row =$result->fetch_assoc();
+            if($row) {
+              //print_r($row);
+              $lastResponse = $row;
+
+            }
+            else {
+              //echo "<br>This question has not been attempted yet";
+              $lastResponse = array("cardCategory"=>"0", "timeSubmit"=>date("Y-m-d H:i:s", $t));
+            }
+
+            //echo "<br>";
+            //print_r($lastResponse);
+            
+
+            /*
+
+            if($result->num_rows>0) {
+              while ($row = $result->fetch_assoc()) {
+                
+                echo "<br>";
+                print_r($row);
+                
+              }
+            }
+            else {
+              echo "<br>This question has not been attempted yet";
+            }
+            */
+
+
+
+            //Logic to see if question should appear, based on the bin it is in.
+
+            
+            //echo $t;
+            //echo date("Y-m-d H:i:s", $t);       
+            //echo $lastResponse['timeSubmit'];
+
+            $now = new DateTime(date("Y-m-d H:i:s", $t));
+            $last = new DateTime($lastResponse['timeSubmit']);
+            $interval = $now->diff($last);
+            $daysSince = $interval->days;
+            $minutesSince = $interval->i;
+
+            //echo "daysSince:".$daysSince." minutesSince:".$minutesSince;
+            
+            //echo "<br>".$interval->days;
+            //echo "<br>difference " . $interval->y . " years, " . $interval->m." months, ".$interval->d." days ".$interval->h." hours ".$interval->i." minutes ".$interval->s." seconds";
+
+
+            if (
+              $lastResponse['cardCategory'] == 0 ||
+              (($lastResponse['cardCategory'] == 1 )&&($minutesSince>=3) ) ||
+              (($lastResponse['cardCategory'] == 2 )&&($minutesSince>=5) )
+            )
+
+            {
+              //echo "<br>Valid questions: ".$qCount;
+              break;
+            }
+
+            else {
+              array_pop($questions);
+
+
+            }
+
+
+
+        
       }
 
+      if(count($questions) == 0) {
+       
+        ?>
 
-      //Find the response for the last time this question was answered:
+        <div  class="font-sans border border-black border-solid p-3 m-2">
 
-        $randomQuestionId = $questions[$randomQuestion]['id'];
+        <p class="mb-3">Well done! There are no more cards for you to revise.</p>
 
-        //echo "<br>".$randomQuestionId;
+        </div>
 
-        $sql = "SELECT * FROM flashcard_responses WHERE userId = ? AND questionId = ? ORDER BY timeSubmit DESC";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ii", $userId, $randomQuestionId);
-        $stmt->execute();
-        $result = $stmt->get_result();
 
-        $row =$result->fetch_assoc();
-        if($row) {
-          //print_r($row);
-          $lastResponse = $row;
-
-        }
-        else {
-          //echo "<br>This question has not been attempted yet";
-          $lastResponse = array("cardCategory"=>"0", "timeSubmit"=>date("Y-m-d H:i:s", $t));
-        }
-
-        echo "<br>";
-        print_r($lastResponse);
+        <?php
         
-
-        /*
-
-        if($result->num_rows>0) {
-          while ($row = $result->fetch_assoc()) {
-            
-            echo "<br>";
-            print_r($row);
-            
-          }
-        }
-        else {
-          echo "<br>This question has not been attempted yet";
-        }
-        */
-
-
-
-        //Logic to see if question should appear, based on the bin it is in.
-
-        
-        //echo $t;
-        //echo date("Y-m-d H:i:s", $t);       
-        //echo $lastResponse['timeSubmit'];
-
-        $now = new DateTime(date("Y-m-d H:i:s", $t));
-        $last = new DateTime($lastResponse['timeSubmit']);
-        $interval = $now->diff($last);
-        $daysSince = $interval->days;
-        
-        //echo "<br>".$interval->days;
-        //echo "<br>difference " . $interval->y . " years, " . $interval->m." months, ".$interval->d." days ".$interval->h." hours ".$interval->i." minutes ".$interval->s." seconds"; 
-
-
-
-              
+      } else {
         
         
         
@@ -360,6 +401,8 @@ if($result->num_rows>0) {
       </form>
 
     </div>
+
+    <?php } ?>
     
     <script >
 
