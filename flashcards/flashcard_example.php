@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
   $timeStart = $_POST['timeStart'];
   
 
-  $timeSubmit = date("Y-m-d h:i:s",$t);
+  $timeSubmit = date("Y-m-d H:i:s",$t);
   //echo "<br>".$timeSubmit."<br>";
 
   
@@ -263,8 +263,8 @@ if($result->num_rows>0) {
           $lastResponse = array("cardCategory"=>"0");
         }
 
-        
-        //print_r($lastResponse);
+        echo "<br>";
+        print_r($lastResponse);
         
 
         /*
@@ -282,6 +282,20 @@ if($result->num_rows>0) {
         }
         */
 
+
+
+        //Logic to see if question should appear, based on the bin it is in.
+
+        /*
+        //echo $t;
+        echo date("Y-m-d H:i:s", $t);
+        echo "<br>";
+        echo $row['timeSubmit'];
+        echo "<br>";
+        //$now = new DateTime(date("Y-m-d H:i:s", $t));
+        //$last =;
+        */
+
     ?>
 
     <div id="flashcard" class="font-sans border border-black border-solid p-3 m-2">
@@ -289,23 +303,25 @@ if($result->num_rows>0) {
       <form method="post">
         <h2 class ="text-lg">Question:</h2>
         <input type="hidden" name="questionId" value = "<?=$questions[$randomQuestion]['id']?>">
-        <input type="hidden" name="timeStart" value = "<?=date("Y-m-d h:i:s",time())?>">
+        <input type="hidden" name="timeStart" value = "<?=date("Y-m-d H:i:s",time())?>">
         <input type="hidden" name="cardCategory" value = "<?=$lastResponse['cardCategory']?>">
         
         <p class="mb-3"><?php echo $questions[$randomQuestion]['question'];?></p>
         
         <div id="buttonsDiv" class="flex justify-center">
-          <button value ="0" name="rightWrong" class="grow m-3">I don't know</button>
-          <button type = "button" class="grow m-3" onclick="showAnswers();">Show answers</button>
+          <button type = "button" class="grow m-3" onclick="showAnswers();hideButtons();swapButtons()">I don't know</button>
+          <button value ="0" name="rightWrong" class="grow m-3 hidden ">I don't know</button>
+          <button type = "button" class="grow m-3" onclick="showAnswers();hideButtons()">Show answers</button>
         </div>
         
         <div id ="answerDiv" class="hidden">
           <h2 class ="text-lg">Answer:</h2>
           <p class="mb-3"><?=$questions[$randomQuestion]['model_answer'];?></p>
           <div id ="buttonsDiv2" class="flex justify-center">
-            <button value ="1" name="rightWrong" class="grow m-3">Wrong Answer</button>
-            <button value ="2" name="rightWrong" class="grow m-3">Correct Answer</button>
-           </div>
+            <button id = "1Button" value ="1" name="rightWrong" class="grow m-3">Wrong Answer</button>
+            <button id = "2Button" value ="2" name="rightWrong" class="grow m-3">Correct Answer</button>
+            <button id = "0Button" value ="0" name="rightWrong" class="grow m-3 hidden">Next Question</button>
+          </div>
         </div>
 
       </form>
@@ -318,12 +334,23 @@ if($result->num_rows>0) {
         var answerDiv = document.getElementById("answerDiv");
         answerDiv.classList.remove("hidden");
 
+      }
+
+      function hideButtons() {
+
         var buttonsDiv = document.getElementById("buttonsDiv");
         buttonsDiv.classList.add("hidden");
 
-        
+      }
 
+      function swapButtons() {
+        var Button0 = document.getElementById("0Button");
+        var Button1 = document.getElementById("1Button");
+        var Button2 = document.getElementById("2Button");
 
+        Button1.classList.add("hidden");
+        Button2.classList.add("hidden");
+        Button0.classList.remove("hidden");
 
       }
 
