@@ -36,7 +36,66 @@ $userId = $_SESSION['userid'];
 $t = time();
 
 
+function lastResponse($questionId) {
 
+  global $conn;
+  global $t;  
+  global $userId;
+   
+
+  $sql = "SELECT * FROM flashcard_responses WHERE userId = ? AND questionId = ? ORDER BY timeSubmit DESC";
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("ii", $userId, $questionId);
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  $row =$result->fetch_assoc();
+  if($row) {
+    //print_r($row);
+    return $lastResponse = $row;
+
+  }
+  else {
+    //echo "<br>This question has not been attempted yet";
+    return $lastResponse = array("cardCategory"=>"0", "timeSubmit"=>date("Y-m-d H:i:s", $t));
+   
+  }
+
+  //echo "<br>";
+  //print_r($lastResponse);
+  
+
+  /*
+
+  if($result->num_rows>0) {
+    while ($row = $result->fetch_assoc()) {
+      
+      echo "<br>";
+      print_r($row);
+      
+    }
+  }
+  else {
+    echo "<br>This question has not been attempted yet";
+  }
+  */
+}
+
+function timeBetween($dateTime) {
+
+  global $t;
+  $now = new DateTime(date("Y-m-d H:i:s", $t));
+  $last = new DateTime($dateTime);
+  $interval = $now->diff($last);
+  $daysSince = $interval->days;
+  return $minutesSince = $interval->i;
+
+  //echo "daysSince:".$daysSince." minutesSince:".$minutesSince;
+  
+  //echo "<br>".$interval->days;
+  //echo "<br>difference " . $interval->y . " years, " . $interval->m." months, ".$interval->d." days ".$interval->h." hours ".$interval->i." minutes ".$interval->s." seconds";
+
+}
 
 
 
@@ -233,6 +292,13 @@ if($result->num_rows>0) {
 
 
       //print_r($questions);
+      foreach($questions as $question) {
+        $last = lastResponse($question['id']);
+        echo "<br>".$question['id'].": ".$question['question']." || "./*$last['gotRight'].*/" ".$last['timeSubmit']." cardCat:".$last['cardCategory']." timeSince: ".timeBetween($last['timeSubmit']);
+        
+        
+        
+      }
       echo "<br>Total questions: ".count($questions);
 
 
@@ -271,43 +337,10 @@ if($result->num_rows>0) {
 
             $randomQuestionId = $questions[$randomQuestion]['id'];
 
-            //echo "<br>".$randomQuestionId;
+            echo "<br>".$randomQuestionId;
 
-            $sql = "SELECT * FROM flashcard_responses WHERE userId = ? AND questionId = ? ORDER BY timeSubmit DESC";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("ii", $userId, $randomQuestionId);
-            $stmt->execute();
-            $result = $stmt->get_result();
 
-            $row =$result->fetch_assoc();
-            if($row) {
-              //print_r($row);
-              $lastResponse = $row;
-
-            }
-            else {
-              //echo "<br>This question has not been attempted yet";
-              $lastResponse = array("cardCategory"=>"0", "timeSubmit"=>date("Y-m-d H:i:s", $t));
-            }
-
-            //echo "<br>";
-            //print_r($lastResponse);
-            
-
-            /*
-
-            if($result->num_rows>0) {
-              while ($row = $result->fetch_assoc()) {
-                
-                echo "<br>";
-                print_r($row);
-                
-              }
-            }
-            else {
-              echo "<br>This question has not been attempted yet";
-            }
-            */
+            $lastResponse = lastResponse($randomQuestionId);
 
 
 
@@ -318,22 +351,14 @@ if($result->num_rows>0) {
             //echo date("Y-m-d H:i:s", $t);       
             //echo $lastResponse['timeSubmit'];
 
-            $now = new DateTime(date("Y-m-d H:i:s", $t));
-            $last = new DateTime($lastResponse['timeSubmit']);
-            $interval = $now->diff($last);
-            $daysSince = $interval->days;
-            $minutesSince = $interval->i;
+           
 
-            //echo "daysSince:".$daysSince." minutesSince:".$minutesSince;
-            
-            //echo "<br>".$interval->days;
-            //echo "<br>difference " . $interval->y . " years, " . $interval->m." months, ".$interval->d." days ".$interval->h." hours ".$interval->i." minutes ".$interval->s." seconds";
-
+            $daysSince = timeBetween($lastResponse['timeSubmit']);
 
             if (
               $lastResponse['cardCategory'] == 0 ||
-              (($lastResponse['cardCategory'] == 1 )&&($minutesSince>=3) ) ||
-              (($lastResponse['cardCategory'] == 2 )&&($minutesSince>=5) )
+              (($lastResponse['cardCategory'] == 1 )&&($daysSince>=3) ) ||
+              (($lastResponse['cardCategory'] == 2 )&&($daysSince>=5) )
             )
 
             {
@@ -342,7 +367,7 @@ if($result->num_rows>0) {
             }
 
             else {
-              array_pop($questions);
+              array_splice($questions, $randomQuestion, 1);
 
 
             }
@@ -381,6 +406,7 @@ if($result->num_rows>0) {
         <input type="hidden" name="cardCategory" value = "<?=$lastResponse['cardCategory']?>">
         
         <p class="mb-3"><?php echo $questions[$randomQuestion]['question'];?></p>
+        <p><?php //print_r(lastResponse($questions[$randomQuestion]['id']));?>
         
         <div id="buttonsDiv" class="flex justify-center">
           <button type = "button" class="grow m-3" onclick="showAnswers();hideButtons();swapButtons()">I don't know</button>
