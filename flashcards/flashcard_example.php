@@ -297,12 +297,12 @@ if($result->num_rows>0) {
       //print_r($questions);
       foreach($questions as $question) {
         $last = lastResponse($question['id']);
-        echo "<br>".$question['id'].": ".$question['question']." || "./*$last['gotRight'].*/" ".$last['timeSubmit']." cardCat:".$last['cardCategory']." timeSince: ".timeBetween($last['timeSubmit']);
+        //echo "<br>".$question['id'].": ".$question['question']." || "./*$last['gotRight'].*/" ".$last['timeSubmit']." cardCat:".$last['cardCategory']." timeSince: ".timeBetween($last['timeSubmit']);
         
         
         
       }
-      echo "<br>Total questions: ".count($questions);
+      //echo "<br>Total questions: ".count($questions);
 
 
       /*
@@ -340,7 +340,7 @@ if($result->num_rows>0) {
 
             $randomQuestionId = $questions[$randomQuestion]['id'];
 
-            echo "<br>".$randomQuestionId;
+            //echo "<br>".$randomQuestionId;
 
 
             $lastResponse = lastResponse($randomQuestionId);
