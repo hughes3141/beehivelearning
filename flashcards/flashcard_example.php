@@ -33,6 +33,9 @@ if ($conn->connect_error) {
 
 
 $userId = $_SESSION['userid'];
+
+
+date_default_timezone_set("Europe/London");
 $t = time();
 
 
