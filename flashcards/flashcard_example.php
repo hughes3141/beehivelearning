@@ -84,6 +84,8 @@ function lastResponse($questionId) {
   */
 }
 
+
+
 function timeBetween($dateTime) {
 
   global $t;
@@ -102,8 +104,8 @@ function timeBetween($dateTime) {
 
 
 
-//echo "<br>Post:";
-//print_r($_POST);
+echo "<br>Post:";
+print_r($_POST);
 
 
 //Insert response into database
@@ -135,15 +137,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
       $cardCategory = 2;
     }
   }
-  
-  
 
-  
+  $lastResponse = (lastResponse($_POST['questionId']));
 
-
-  $stmt->execute();
+  if ($lastResponse['timeStart'] === $timeStart) {
+    echo "This was a duplicate and will not be entered";
+  }
+  else {
     
-  //echo "New records created successfully";
+    $stmt->execute();
+      
+    //echo "New records created successfully";
+
+  }
+  
+
+  //print_r($lastResponse);
+  
+
+  
+
+
 
   
 }
@@ -402,13 +416,15 @@ if($result->num_rows>0) {
 
     <div id="flashcard" class="font-sans border border-black border-solid p-3 m-2">
     
+    <?php //print_r(lastResponse($questions[$randomQuestion]['id']));?>
+
       <form method="post">
         <h2 class ="text-lg">Question:</h2>
-        <input type="hidden" name="questionId" value = "<?=$questions[$randomQuestion]['id']?>">
+        <input type="hidden" name="questionId" value = "<?=htmlspecialchars($questions[$randomQuestion]['id'])?>">
         <input type="hidden" name="timeStart" value = "<?=date("Y-m-d H:i:s",time())?>">
         <input type="hidden" name="cardCategory" value = "<?=$lastResponse['cardCategory']?>">
         
-        <p class="mb-3"><?php echo $questions[$randomQuestion]['question'];?></p>
+        <p class="mb-3"><?php echo htmlspecialchars($questions[$randomQuestion]['question']);?></p>
         <p><?php //print_r(lastResponse($questions[$randomQuestion]['id']));?>
         
         <div id="buttonsDiv" class="flex justify-center">
@@ -419,7 +435,7 @@ if($result->num_rows>0) {
         
         <div id ="answerDiv" class="hidden">
           <h2 class ="text-lg">Answer:</h2>
-          <p class="mb-3"><?=$questions[$randomQuestion]['model_answer'];?></p>
+          <p class="mb-3"><?=htmlspecialchars($questions[$randomQuestion]['model_answer']);?></p>
           <div id ="buttonsDiv2" class="flex justify-center">
             <button id = "1Button" value ="1" name="rightWrong" class="grow m-3">Wrong Answer</button>
             <button id = "2Button" value ="2" name="rightWrong" class="grow m-3">Correct Answer</button>
