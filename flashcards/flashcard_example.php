@@ -102,6 +102,22 @@ function timeBetween($dateTime) {
 
 }
 
+function secondsBetween($dateTime, $dateTime2) {
+
+  global $t;
+  $now = new DateTime($dateTime2);
+  $last = new DateTime($dateTime);
+  $interval = $now->diff($last);
+
+  $seconds = $interval->days * 24 * 60 * 60;
+  $seconds += $interval->h * 60 * 60;
+  $seconds += $interval->i * 60;
+  $seconds += $interval->s;
+  
+  return $seconds;
+
+}
+
 
 
 //echo "<br>Post:";
@@ -109,8 +125,8 @@ function timeBetween($dateTime) {
 
 
 //Insert response into database
-$stmt = $conn->prepare("INSERT INTO flashcard_responses (questionId,  userId, gotRight, timeStart, timeSubmit, cardCategory) VALUES (?, ?, ?, ?, ?, ?)");
-$stmt->bind_param("iiissi", $questionId, $userId, $gotRight, $timeStart, $timeSubmit, $cardCategory);
+$stmt = $conn->prepare("INSERT INTO flashcard_responses (questionId,  userId, gotRight, timeStart, timeSubmit, cardCategory, timeDuration, dateSubmit) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+$stmt->bind_param("iiissiis", $questionId, $userId, $gotRight, $timeStart, $timeSubmit, $cardCategory, $seconds, $date);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') 
 
@@ -122,6 +138,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 
   $timeSubmit = date("Y-m-d H:i:s",$t);
   //echo "<br>".$timeSubmit."<br>";
+
+  $seconds = secondsBetween($timeStart, $timeSubmit);
+
+  $date = date("Y-m-d", strtotime($timeSubmit));
+  //echo $date;
 
   
 
@@ -148,6 +169,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
     $stmt->execute();
       
     //echo "New records created successfully";
+
+    
+
 
   }
   
