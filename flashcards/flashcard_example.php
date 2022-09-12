@@ -104,8 +104,8 @@ function timeBetween($dateTime) {
 
 
 
-echo "<br>Post:";
-print_r($_POST);
+//echo "<br>Post:";
+//print_r($_POST);
 
 
 //Insert response into database
@@ -141,7 +141,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
   $lastResponse = (lastResponse($_POST['questionId']));
 
   if ($lastResponse['timeStart'] === $timeStart) {
-    echo "This was a duplicate and will not be entered";
+    //echo "This was a duplicate and will not be entered";
   }
   else {
     
