@@ -3,5 +3,5 @@
 deployment:
   tasks:
     - export DEPLOYPATH=/home/thinkeco/beehivelearning.co.uk/
-    - /bin/cp -R * $DEPLOYPATH
+    - /bin/cp index.php $DEPLOYPATH
     
