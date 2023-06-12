@@ -1,5 +1,5 @@
 
-name: Deploy BeehiveLearning to Test Environment
+name: Deploy BeehiveLearning to Production Environment
 on:
   workflow_dispatch:
 jobs:
