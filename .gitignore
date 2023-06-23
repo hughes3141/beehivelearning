@@ -1,0 +1,11 @@
+#dist/output.css
+*.pdf
+*.png
+*.jpg
+*.wav
+
+/assets/
+
+
+tailwindcss/node_modules/
+
