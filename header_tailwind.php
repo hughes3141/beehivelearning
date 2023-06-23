@@ -12,7 +12,11 @@
     <meta name="author" content="Ryan Hughes" />
 
 
-    <link rel="stylesheet" href="https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css"/>
+    <!-- Use below for development
+    
+   --> 
+    <script src="https://cdn.tailwindcss.com"></script>
+      
 
 
     <!--Replace with your tailwind.css once created-->

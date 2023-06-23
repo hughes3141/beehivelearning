@@ -22,7 +22,13 @@ include "header_tailwind.php";
         </div>
         <!--Right Col-->
         <div class="w-full md:w-3/5 py-6 text-center">
-          <img class="w-full md:w-4/5 z-50" src="hero.png" />
+          <img class="w-full md:w-4/5 z-50 mx-auto" src="beehive.png" style="background: transparent" />
+
+          <!-- BEEHIVE ICON:  
+          <video class="w-full md:w-4/5 z-50" preload="none" style="background: transparent  url('https://cdn-icons-png.flaticon.com/512/8485/8485587.png') 50% 50% / fit no-repeat;" autoplay="autoplay" loop="true" muted="muted" playsinline="">
+              <source src="https://cdn-icons-mp4.flaticon.com/512/8485/8485587.mp4" type="video/mp4">
+          </video>
+                  -->
         </div>
       </div>
     </div>
