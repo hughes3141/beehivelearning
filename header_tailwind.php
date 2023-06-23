@@ -52,7 +52,7 @@
     <nav id="header" class="fixed w-full z-30 top-0 text-white">
       <div class="w-full container mx-auto flex flex-wrap items-center justify-between mt-0 py-2">
         <div class="pl-4 flex items-center">
-          <a class="toggleColour text-white no-underline hover:no-underline font-bold text-2xl lg:text-4xl font-mono" href="#">
+          <a class="toggleColour text-white no-underline hover:no-underline font-bold text-2xl lg:text-4xl font-mono" href="/">
             
           <svg class="h-8 fill-current inline" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
             <g>
@@ -99,15 +99,47 @@
             </li>
           </ul>
           <button
-            id="dropdownNavbarLink" data-dropdown-toggle="dropdownNavbar"
-            class="flex items-center mx-auto lg:mx-0 hover:underline bg-pink-200 lg:bg-white text-gray-800 font-bold rounded-full mt-4 lg:mt-0 py-4 px-8 shadow opacity-75 focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out"
-          >
-            Action
+            <?php
+              $signIn = false;
+              if(isset($_SESSION['userid'])&&($_SESSION['userid']!="")) {
+                $signIn = true;
+              }
+            ?>
+            id="dropdownNavbarLink" 
+            <?php if ($signIn == true) {
+              ?> data-dropdown-toggle="dropdownNavbar" <?php
+            }
+            ?>
+            class="flex items-center mx-auto lg:mx-0 hover:underline bg-cyan-100 lg:bg-white text-gray-800 font-bold rounded-full mt-4 lg:mt-0 py-4 px-8 shadow opacity-75 focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out" 
+            <?php
+              if($signIn == false) {
+                ?> onclick="location.href = '/login.php'" <?php
+              }
+              ?>
+            >
+          
+
+          <?php
+            
+            if($signIn == false) {
+              echo "Sign In";
+            } else {
+              $userInfo = getUserInfo($_SESSION['userid']);
+              echo trim($userInfo['name_first']." ".$userInfo['name_last']);
+              ?> 
+              <svg class="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+              <?php
+              }
+            
+            
+            ?>
+            
+          
           </button>
           <div id="dropdownNavbar" class="z-10 hidden bg-white divide-y divide-gray-100 rounded shadow w-44 dark:bg-gray-800 dark:divide-gray-600">
                 <ul class="py-1 text-sm text-gray-800 dark:text-gray-400" aria-labelledby="dropdownLargeButton">
                   <li>
-                    <a href="/user/user3.0.php" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Dashboard</a>
+                    <a href="/user/user.php" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Dashboard</a>
                   </li>
                   <!--
                   <li>

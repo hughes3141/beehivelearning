@@ -34,7 +34,7 @@ if(isset($_SESSION["userid"])){
 
 $path = $_SERVER['DOCUMENT_ROOT'];
 include($path."/php_header.php");
-include($path."/php_functions.php");
+//include($path."/php_functions.php");
  
 // Define variables and initialize with empty values
 $username = $password2 = "";
@@ -113,7 +113,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                             if(($previous !="")&&($previous !="/")) {
                               header("location: ".$previous);
                             } else if ($previous == "/") {
-                              header("location: ./user/user3.0.php");
+                              header("location: ./user/user.php");
                             } else {
                               header("location: index.php");
                             }
@@ -142,7 +142,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
  
  <?php include "header_tailwind.php"; ?>
  <div class="container mx-auto px-4 mt-20 lg:w-1/2">
-<body>
+
   <h1 class="font-mono text-2xl bg-pink-400 pl-1">User Login</h1>
     <div class="font-mono container mx-auto px-0 mt-2 bg-white text-black mb-5">
    
@@ -179,9 +179,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
       -->
         </form>
     </div>
+  </div>
 
 
   <?php include "footer_tailwind.php";?>
-</body>
-</div>
-</html>
+
