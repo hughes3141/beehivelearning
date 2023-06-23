@@ -37,7 +37,11 @@
 
   // Accesss thinkeconomics pathway:
   $path3 = $_SERVER['DOCUMENT_ROOT'];
-  $path3 .= "/../thinkeconomics/php_functions.php";
+  echo $path3;
+  if($path3 == "C:/xampp/htdocs/beehivelearning") {  
+    $path3 .= "/../thinkeconomics/php_functions.php";
+  } 
+  else $path3 .= "/../public_html/php_functions.php";
 
   include($path3);
   
