@@ -1,5 +1,25 @@
 <?php
 
+// Initialize the session
+session_start();
+
+//Define $_SESSION['this_url'] as this page:
+
+$_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
+
+// Define which page redirected to here
+//Storing previous URLs to ensure that we can redirect to page where we cane from
+
+if(isset($_SESSION['this']))
+if($_SESSION['this_url'] != $_SERVER['REQUEST_URI']) {
+  $_SESSION['last_url'] = $_SESSION['this_url'];
+  $_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
+}
+
+$path = $_SERVER['DOCUMENT_ROOT'];
+include($path."/php_header.php");
+//include($path."/php_functions.php");
+
 include "header_tailwind.php";
 ?>
 
