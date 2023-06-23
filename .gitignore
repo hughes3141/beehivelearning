@@ -8,5 +8,7 @@
 /assets/
 
 
-tailwindcss/node_modules/
+/tailwindcss/node_modules/
+/tailwindcss/package-lock.json
+/tailwindcss/package.json
 
