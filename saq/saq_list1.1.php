@@ -7,7 +7,7 @@ $_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
 
 $path = $_SERVER['DOCUMENT_ROOT'];
 include($path."/php_header.php");
-include($path."/php_functions.php");
+//include($path."/php_functions.php");
 
 if (!isset($_SESSION['userid'])) {
   
@@ -54,6 +54,12 @@ $style_input = "
 
 $showFlashCards = 1;
 $showAssetId = 1;
+
+//CHANGED FOR BEEHIVE: showFlashCards and showAssetId set to Null
+
+$showFlashCards = null;
+$showAssetId = null;
+
 
 if(isset($_GET['noFlashCard'])) {
   $showFlashCards = null; 
@@ -479,9 +485,10 @@ include($path."/header_tailwind.php");
             <div class="show_<?=$row['id'];?>">
               <?=htmlspecialchars($row['question']);?>
               <?php
+                    //CHANGING PATH FOR BEEHIVE LEARNING
                     if(!is_null($row['q_path'])) {
                       ?>
-                      <img class = "mx-auto my-1 max-h-80" src= "<?=htmlspecialchars($row['q_path'])?>" alt = "<?=htmlspecialchars($row['q_alt'])?>">
+                      <img class = "mx-auto my-1 max-h-80" src= "https://www.thinkeconomics.co.uk<?=htmlspecialchars($row['q_path'])?>" alt = "<?=htmlspecialchars($row['q_alt'])?>">
                       <?php
                     }
                     ?>
@@ -538,7 +545,7 @@ include($path."/header_tailwind.php");
               <?php
                     if(!is_null($row['a_path'])) {
                       ?>
-                      <img class = "mx-auto my-1 max-h-80" src= "<?=htmlspecialchars($row['a_path'])?>" alt = "<?=htmlspecialchars($row['a_alt'])?>">
+                      <img class = "mx-auto my-1 max-h-80" src= "https://www.thinkeconomics.co.uk<?=htmlspecialchars($row['a_path'])?>" alt = "<?=htmlspecialchars($row['a_alt'])?>">
                       <?php
                     }
                     ?>
