@@ -7,7 +7,7 @@ $_SESSION['this_url'] = $_SERVER['REQUEST_URI'];
 
 $path = $_SERVER['DOCUMENT_ROOT'];
 include($path."/php_header.php");
-//include($path."/php_functions.php");
+include($path."/php_functions.php");
 
 if (!isset($_SESSION['userid'])) {
   
@@ -52,13 +52,8 @@ $style_input = "
  Set $showAssetId to null and user will not have the option of inserting asset Ids (to be used until it is sorted so that users can upload assets easily) 
  */
 
-
-
-//CHANGED FOR BEEHIVE LEARNING:
-//$showFlashCards and $showAssetId are removed to make simpler for user:
-
-$showFlashCards = null;
-$showAssetId = null;
+$showFlashCards = 1;
+$showAssetId = 1;
 
 if(isset($_GET['noFlashCard'])) {
   $showFlashCards = null; 
@@ -70,11 +65,10 @@ $flashCardSubmit = null;
 if($showFlashCards == null) {
   $flashCardSubmit =1;
 }
-/*
-if($showAssetId == null) {
-  $assetSubmit = "";
-}
-*/
+
+//assetSubmit = "";
+
+
 
 if (isset($_POST['submit'])) {
 
@@ -131,9 +125,6 @@ if (isset($_POST['submit'])) {
 
       insertSAQQuestion($topic, $question, $points, $type, "", $model_answer, $userCreate, $subjectId, "", "", $timeAdded, $questionAsset, $answerAsset, $flashCard, $topic_order, $levelId);
       
-
-      //CHANGED FOR BEEHIVE LEARNING UNTIL CHANGE ORDER NUMBER IS SORTED:
-
       //Update topic_order for new Entry:
       //changeOrderNumberWithinTopic(null, $topic, $topic_order, $subjectId, $levelId);
 
@@ -161,11 +152,26 @@ if(isset($_POST['updateValue'])) {
     $flashCard = $flashCardSubmit;
   }
 
+  $questionAsset = null;
+  $answerAsset = null;
+  
+  if(isset($_POST['questionAsset'])) {
+    if($_POST['questionAsset'] == "") {
+      $questionAsset = null;
+    }      
+    if($_POST['answerAsset'] == "") {
+      $answerAsset = null;
+    }
+    $questionAsset = $_POST['questionAsset'];
+    $answerAsset = $_POST['answerAsset'];
+
+  }
+
   //Update Record:
-  $updateMessage = updateSAQQuestion($_POST['id'], $userId, $_POST['question'], $_POST['topic'], $_POST['points'], $_POST['type'], "", $_POST['model_answer'], "", "", $_POST['questionAsset'], $_POST['answerAsset'], $flashCard);
+  $updateMessage = updateSAQQuestion($_POST['id'], $userId, $_POST['question'], $_POST['topic'], $_POST['points'], $_POST['type'], "", $_POST['model_answer'], "", "", $questionAsset, $answerAsset, $flashCard);
 
   //Change order value:
-  changeOrderNumberWithinTopic($_POST['id'], $_POST['topic'], $_POST['topic_order'], $_POST['subjectId'], $_POST['levelId'], $userId);
+  //changeOrderNumberWithinTopic($_POST['id'], $_POST['topic'], $_POST['topic_order'], $_POST['subjectId'], $_POST['levelId'], $userId);
 
 }
 
