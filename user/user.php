@@ -46,43 +46,9 @@ include "../header_tailwind.php";
     
           <p class="pl-1 text-lg bg-sky-100 font-mono my-2">Logged in as <?php echo trim($userInfo['name_first']." ".$userInfo['name_last']);?></p>
         
-        <?php
-          //print_r($userInfo);
-        ?>
 
-          <?php if(str_contains($permissions, "teacher")) 
-          { ?>
-          <div class="border-2 border-sky-300 rounded m-3 p-1">
-            <?php 
-          } ?>
-            <h1 class="font-mono text-xl bg-pink-300 pl-1">Student Resources</h1>
-      <?php if(str_contains($permissions, "teacher")) 
-      { ?>
-            <p >These are the types of resosurces your students will see:</p>
-        <?php 
-      } ?>      
-            <div class="m-3 border-pink-300 border-2 p-3">
-              <h2>Upcoming Assignments:</h2>
-              <?php include "upcoming_assignment_embed1.0.php";?>
-            </div>
-            <p class="ml-2 hover:bg-sky-100">
-              <a class ="block" href="user_mcq_review.php">MCQ Review</a>
-            </p>
-            <?php
-            // Following line is to filter to ensure that user's school has saq_dashboard enabled in permissions.
-            if(str_contains($userInfo['school_permissions'], "saq_dashboard")) 
-            { ?>
-              <p class="ml-2 hover:bg-sky-100">
-                <a class ="block" href="user_saq_review2.0.php">Short Answer Questions Review</a>
-              </p>
-            <?php 
-            } ?>
-            <p class="ml-2 hover:bg-sky-100">
-              <a class ="block" href="user_assign_review.php">All Assignments Review</a>
-            </p>
-          <?php if(str_contains($permissions, "teacher")) { ?>
-          </div>
-          <?php } ?>
+
+
           
         <?php
 
@@ -94,6 +60,8 @@ include "../header_tailwind.php";
           ?>
           
           <h1 class="font-mono text-xl bg-pink-300 pl-1" >Teacher Resources</h1>
+          <?php
+          /*
             <h2 class="font-mono text-lg bg-pink-200 pl-1">Assignments</h2>
               <p class="ml-2 hover:bg-sky-100">
                 <a class ="block" href="/assign_create1.0.php">Create Assignment</a>
@@ -107,8 +75,8 @@ include "../header_tailwind.php";
               <p class="ml-2 hover:bg-sky-100">
                 <a class ="block" href="/user/user_work_review.php">Review All Assignments By User</a>
               </p>
-
-            
+          */
+        ?>
             <h2 class="font-mono text-lg bg-pink-200 pl-1">Admin</h2>
 
               <p class="ml-2 hover:bg-sky-100">
@@ -127,11 +95,18 @@ include "../header_tailwind.php";
                 <a class ="block" href="/user/user_manager.php">Manage Users</a>
               </p>
 
+              <h2 class="font-mono text-lg bg-pink-200 pl-1">Question Management</h2> 
+            <p class="ml-2 hover:bg-sky-100">
+                <a class ="block" href="/saq/saq_list1.1.php?noFlashCard&noAssetInput">Upload/Update Questions</a>
+              </p>
+
       <?php 
         }
         ?>
 
-      <?php if(str_contains($permissions, "main_admin")) { 
+      <?php 
+        /*
+        if(str_contains($permissions, "main_admin")) { 
         ?>
             <h2 class="font-mono text-lg bg-pink-200 pl-1">News Management</h2>
               <p class="ml-2 hover:bg-sky-100"><a class ="block" href="../news/news_input2.1.php">News Input</a></p>
@@ -187,6 +162,7 @@ include "../header_tailwind.php";
           <?php
           
         }
+        */
 
 
         ?>
@@ -195,6 +171,7 @@ include "../header_tailwind.php";
         <?php
 
         //Following block provides admin resources:
+        /*
 
         if (str_contains($userInfo['permissions'], "main_admin")) {
           
@@ -216,7 +193,7 @@ include "../header_tailwind.php";
           <?php
           
         }
-
+        */
 
         ?>
       </div>
