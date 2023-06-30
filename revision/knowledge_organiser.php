@@ -167,7 +167,7 @@ if($topics == null || $subjectId == null ) {
               <?php
                 if(!is_null($question['q_path'])) {
                   ?>
-                  <img class = "mx-auto my-1 max-h-80" src= "<?=htmlspecialchars($question['q_path'])?>" alt = "<?=htmlspecialchars($question['q_alt'])?>">
+                  <img class = "mx-auto my-1 max-h-80" src= "https://www.thinkeconomics.co.uk<?=htmlspecialchars($question['q_path'])?>" alt = "<?=htmlspecialchars($question['q_alt'])?>">
                   <?php
                 }
                 ?>
@@ -177,7 +177,7 @@ if($topics == null || $subjectId == null ) {
               <?php
                 if(!is_null($question['a_path'])) {
                   ?>
-                  <img class = "mx-auto my-1 max-h-80" src= "<?=htmlspecialchars($question['a_path'])?>" alt = "<?=htmlspecialchars($question['a_alt'])?>">
+                  <img class = "mx-auto my-1 max-h-80" src= "https://www.thinkeconomics.co.uk<?=htmlspecialchars($question['a_path'])?>" alt = "<?=htmlspecialchars($question['a_alt'])?>">
                   <?php
                 }
                 ?>
