@@ -7,7 +7,7 @@
     <title>
       Beehive Learning
     </title>
-    <meta name="description" content="Resources to support studnet-led learning" />
+    <meta name="description" content="Resources to support student-led learning" />
     <meta name="keywords" content="" />
     <meta name="author" content="Ryan Hughes" />
 
