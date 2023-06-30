@@ -42,7 +42,7 @@ include "../header_tailwind.php";
 
   <div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-1/2">
     <h1 class="font-mono text-xl bg-pink-400 pl-1">Dashboard</h1>
-      <div class="container mx-auto px-0 mt-2 bg-white text-black">
+      <div class="container mx-auto px-0 mt-2 bg-white text-black mb-5">
     
           <p class="pl-1 text-lg bg-sky-100 font-mono my-2">Logged in as <?php echo trim($userInfo['name_first']." ".$userInfo['name_last']);?></p>
         
