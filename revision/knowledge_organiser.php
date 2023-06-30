@@ -99,6 +99,13 @@ $questions = getSAQQuestions(null, $topics, true, $subjectId, $userCreate, null,
 $topicList = getTopicList("saq_question_bank_3", "topic", $topics, true, $subjectId, $userCreate);
 
 
+//BEEHIVE ONLY: don't return all questions each time
+if($topics == null || $subjectId == null ) {
+  $questions = array();
+  $topicList = array();
+}
+
+
 ?>
 
 <div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-1/2">
