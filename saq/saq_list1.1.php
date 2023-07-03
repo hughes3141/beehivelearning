@@ -519,7 +519,7 @@ include($path."/header_tailwind.php");
               <?php
                     if(!is_null($row['q_path'])) {
                       ?>
-                      <img class = "mx-auto my-1 max-h-80" src= "<?=htmlspecialchars($row['q_path'])?>" alt = "<?=htmlspecialchars($row['q_alt'])?>">
+                      <img class = "mx-auto my-1 max-h-80" src= "https://www.thinkeconomics.co.uk<?=htmlspecialchars($row['q_path'])?>" alt = "<?=htmlspecialchars($row['q_alt'])?>">
                       <?php
                     }
 
@@ -572,7 +572,7 @@ include($path."/header_tailwind.php");
               <?php
                     if(!is_null($row['a_path'])) {
                       ?>
-                      <img class = "mx-auto my-1 max-h-80" src= "<?=htmlspecialchars($row['a_path'])?>" alt = "<?=htmlspecialchars($row['a_alt'])?>">
+                      <img class = "mx-auto my-1 max-h-80" src= "https://www.thinkeconomics.co.uk<?=htmlspecialchars($row['a_path'])?>" alt = "<?=htmlspecialchars($row['a_alt'])?>">
                       <?php
                     }
                     ?>
