@@ -55,11 +55,10 @@ $style_input = "
 $showFlashCards = 1;
 $showAssetId = 1;
 
-//CHANGED FOR BEEHIVE: showFlashCards and showAssetId set to Null
+//BEEHIVE ONLY: SET SHOWFLASHCARDS AND ASSETID SHOW TO NULL:
 
 $showFlashCards = null;
 $showAssetId = null;
-
 
 if(isset($_GET['noFlashCard'])) {
   $showFlashCards = null; 
@@ -67,10 +66,7 @@ if(isset($_GET['noFlashCard'])) {
 if(isset($_GET['noAssetInput'])) {
   $showAssetId = null;
 }
-$flashCardSubmit = null;
-if($showFlashCards == null) {
-  $flashCardSubmit =1;
-}
+
 
 //assetSubmit = "";
 
@@ -82,10 +78,11 @@ if (isset($_POST['submit'])) {
   
   $count = $_POST['questionsCount'];
 
-  $topic = $_POST['topic'];
-  if($_POST['topic_new'] != "") {
-    $topic = trim($_POST['topic_new']);
-  }
+  //$topic = $_POST['topic'];
+  $topicId = $_POST['topicId'];
+
+  $topic = getTopicsGeneralList($topicId)[0]['code'];
+
 
   $subjectId = $_POST['subjectId'];
   $levelId = $_POST['levelId'];
@@ -105,31 +102,18 @@ if (isset($_POST['submit'])) {
     //$answer_img_alt = $_POST['image_ans_alt_'.$x];
     $topic_order = $_POST['topic_order_'.$x];
 
-    $questionAsset = null;
-    $answerAsset = null;
-    
-    if(isset($_POST['questionAsset_'.$x])) {
-      if($_POST['questionAsset_'.$x] == "") {
-        $questionAsset = null;
-      }      
-      if($_POST['answerAsset_'.$x] == "") {
-        $answerAsset = null;
-      }
-      $questionAsset = $_POST['questionAsset_'.$x];
-      $answerAsset = $_POST['answerAsset_'.$x];
+    $questionAsset = $_POST['questionAsset_'.$x];
+    $answerAsset = $_POST['answerAsset_'.$x];
 
-    }
+    
     $flashCard = 0;
     if(isset($_POST['flashCard_'.$x])) {
       $flashCard = $_POST['flashCard_'.$x];
     }
-    if(isset($flashCardSubmit)) {
-      $flashCard = $flashCardSubmit;
-    }
 
     if($_POST['active_entry_'.$x] == "1") {
 
-      insertSAQQuestion($topic, $question, $points, $type, "", $model_answer, $userCreate, $subjectId, "", "", $timeAdded, $questionAsset, $answerAsset, $flashCard, $topic_order, $levelId);
+      insertSAQQuestion($topic, $question, $points, $type, "", $model_answer, $userCreate, $subjectId, "", "", $timeAdded, $questionAsset, $answerAsset, $flashCard, $topic_order, $levelId, $topicId);
       
       //Update topic_order for new Entry:
       //changeOrderNumberWithinTopic(null, $topic, $topic_order, $subjectId, $levelId);
@@ -154,27 +138,21 @@ if(isset($_POST['updateValue'])) {
   if(isset($_POST['flashCard'])) {
     $flashCard = $_POST['flashCard'];
   }
-  if(isset($flashCardSubmit)) {
-    $flashCard = $flashCardSubmit;
+
+
+  $questionAsset = $_POST['questionAsset'];
+  $answerAsset = $_POST['answerAsset'];
+
+  $topicId = $_POST['topicId'];
+  $topic = null;
+  if(isset($_POST['topic'])) {
+    $topic = $_POST['topic'];
   }
 
-  $questionAsset = null;
-  $answerAsset = null;
   
-  if(isset($_POST['questionAsset'])) {
-    if($_POST['questionAsset'] == "") {
-      $questionAsset = null;
-    }      
-    if($_POST['answerAsset'] == "") {
-      $answerAsset = null;
-    }
-    $questionAsset = $_POST['questionAsset'];
-    $answerAsset = $_POST['answerAsset'];
-
-  }
 
   //Update Record:
-  $updateMessage = updateSAQQuestion($_POST['id'], $userId, $_POST['question'], $_POST['topic'], $_POST['points'], $_POST['type'], "", $_POST['model_answer'], "", "", $questionAsset, $answerAsset, $flashCard);
+  $updateMessage = updateSAQQuestion($_POST['id'], $userId, $_POST['question'], $topic, $_POST['points'], $_POST['type'], "", $_POST['model_answer'], "", "", $questionAsset, $answerAsset, $flashCard, $topicId);
 
   //Change order value:
   //changeOrderNumberWithinTopic($_POST['id'], $_POST['topic'], $_POST['topic_order'], $_POST['subjectId'], $_POST['levelId'], $userId);
@@ -196,6 +174,8 @@ $subjectId = null;
 $userCreate = null;
 $type = null;
 
+$topicId = null;
+
 //$userPreferredSubject comes from a user's information.
 if(isset($userInfo['userPreferredSubjectId'])) {
   $userPreferredSubject = $userInfo['userPreferredSubjectId'];
@@ -210,10 +190,6 @@ if(isset($_GET['flashCard'])) {
   $flashCard = 1;
 }
 
-if(isset($flashCardSubmit)) {
-  $flashCard = $flashCardSubmit;
-}
-
 if(isset($_GET['subjectId'])) {
   $subjectId = $_GET['subjectId'];
 }
@@ -224,7 +200,13 @@ if(isset($_GET['userCreate'])) {
   $userCreate = $_GET['userCreate'];
 }
 
-$questions = getSAQQuestions(null, $topicGet, $flashCard, $subjectId, $userCreate, $type, $userId);
+if(isset($_GET['topicId'])) {
+  $topicId = $_GET['topicId'];
+}
+
+$questions = getSAQQuestions(null, $topicGet, $flashCard, $subjectId, $userCreate, $type, $userId, $topicId);
+
+//$questions = getSAQQuestions(null, null, null, null, null, null, null, null);
 
 $questionTopicCount = 0;
 if(isset($_GET['topic'])) {
@@ -244,7 +226,11 @@ if(!is_null($subjectId)) {
   $subjectSelector = $subjectId;
 }
 
-$topics = getColumnListFromTable("saq_question_bank_3", "topic", null, $subjectSelector, null, null, $flashCard);
+$levelId = null;
+
+//$topics = getColumnListFromTable("saq_question_bank_3", "topic", null, $subjectSelector, null, null, $flashCard);
+
+$topics = getTopicsGeneralList(null, null, $subjectSelector, $levelId, null);
 
 
 include($path."/header_tailwind.php");
@@ -273,16 +259,19 @@ include($path."/header_tailwind.php");
       echo "POST:<br>";
       var_dump($_POST);
     }
-    echo "<br>User Info:<br>";
+    echo "<br><br>User Info:<br>";
     print_r($userInfo);
-    echo "<br>Subjects:<br>";
+    echo "<br><br>Subjects:<br>";
     print_r($subjects);
-    echo "<br>Levels:<br>";
+    echo "<br><br>Levels:<br>";
     print_r($levels);
-    echo "<br>Topics:<br>";
+    echo "<br><br>Topics:<br>";
+    echo count($topics)."<br>";
     print_r($topics);
     
   }
+
+
 
 ?>
 
@@ -323,15 +312,29 @@ include($path."/header_tailwind.php");
           if(count($topics)>0) {
             ?>
             <label for="topic">Topic:</label>
-            <select class="inputProperties" id ="topic" name="topic" class="topicSelector" onchange="changeTopic(this);">
+            <select class="inputProperties w-20 " id ="topic" name="topicId" class="topicSelector" onchange="changeTopic(this);">
               <?php
                 $topicPostSelect = null;
-                if(isset($_POST['topic'])) {
-                  $topicPostSelect = $_POST['topic'];
+                if(isset($_POST['topicId'])) {
+                  $topicPostSelect = $_POST['topicId'];
+                }
+                if(isset($_GET['topicId'])) {
+                  $topicPostSelect = $_GET['topicId'];
                 }
                 foreach ($topics as $topic) {
+                  $indent = "";
+                  $disabled = "";
+                    if($topic['topicLevel'] =="0") {
+                      $disabled = 'disabled="disabled"';
+
+                    } else if ($topic['topicLevel'] =="1") {
+                      $indent = "&nbsp&nbsp";
+                      $disabled = 'disabled="disabled"';
+                    } else if ($topic['topicLevel'] =="2") {
+                      $indent = "&nbsp&nbsp&nbsp&nbsp";
+                    }
                   ?>
-                  <option value="<?=$topic?>" <?=($topicPostSelect == $topic) ? "selected":""?> <?=($topicGet == $topic) ? "selected":""?> ><?=$topic?></option>
+                  <option class="" value="<?=$topic['id']?>" <?=($topicPostSelect == $topic['id']) ? "selected":""?> <?=($topicGet == $topic['code']) ? "selected":""?> <?=$disabled?>><?=$indent.$topic['name']?></option>
                   <?php
                 }
               ?>
@@ -339,11 +342,7 @@ include($path."/header_tailwind.php");
           <?php
           }
           ?>
-        <button type="button" class="border border-black rounded new_topic_span px-2 bg-sky-200" onclick='toggleHide(this, "new_topic_span", "Add New Topic", "Hide", "inline")'>Add New Topic</button>
-        <span class="new_topic_span hidden">
-          <label for="topic_new">New Topic:</label>
-          <input class="inputProperties" id="topic_new" name="topic_new" type="text">
-        </span>
+
     </div>
     <table id="question_input_table" class="input_table w-full table-fixed">
       <tr>
@@ -399,47 +398,51 @@ include($path."/header_tailwind.php");
 
       
       <label for="topicGet">Topic:</label>
-      <select id="topicGet" name="topic">
+      <select id="topicGet" class="w-20" name="topicId">
       <?php
             $topicPostSelect = null;
-            if(isset($_POST['topic'])) {
-              $topicPostSelect = $_POST['topic'];
+            if(isset($_POST['topicId'])) {
+              $topicPostSelect = $_POST['topicId'];
+            }
+            if(isset($_GET['topicId'])) {
+              $topicPostSelect = $_GET['topicId'];
             }
             foreach ($topics as $topic) {
+              $indent = "";
+              $disabled = "";
+                if($topic['topicLevel'] =="0") {
+                  $disabled = 'disabled="disabled"';
+
+                } else if ($topic['topicLevel'] =="1") {
+                  $indent = "&nbsp&nbsp";
+                  $disabled = 'disabled="disabled"';
+                } else if ($topic['topicLevel'] =="2") {
+                  $indent = "&nbsp&nbsp&nbsp&nbsp";
+                }
               ?>
-              <option value="<?=$topic?>" <?=($topicPostSelect == $topic) ? "selected":""?> <?=($topicGet == $topic) ? "selected":""?> ><?=$topic?></option>
+              <option class="" value="<?=$topic['id']?>" <?=($topicPostSelect == $topic['id']) ? "selected":""?> <?=($topicGet == $topic['code']) ? "selected":""?> <?=$disabled?>><?=$indent.$topic['name']?></option>
               <?php
             }
           ?>
       </select>
-      <?php
-      if(!is_null($showFlashCards)) {
-      ?>
+      <span class="<?=is_null($showFlashCards)?"hidden":""?>">
         <input id="flashcard_select" type="checkbox" name="flashCard" value="1" <?=(isset($_GET['flashCard'])) ? "checked":""?>>
         <label for="flashcard_select">FlashCards Only</label>
-      <?php
-      }
-      ?>
+      </span>
+
 
       <input class="bg-pink-200 px-2" type="submit" value="Choose Topic">
+      <div class="hidden">
+        <input type="checkbox" value="1" name="noFlashCard" <?=is_null($showFlashCards)?"checked":""?>>
+        <input type="checkbox" value="1" name="noAssetInput" <?=is_null($showAssetId)?"checked":""?>>
+      </div>
     </div>
-    <div class="hidden">
-      <input type="checkbox" value="1" name="noFlashCard" <?php
-        if(is_null($showFlashCards)) {
-          echo "checked";
-        }
-      ?>>
-      <input type="checkbox" value="1" name="noAssetInput" <?php
-        if(is_null($showAssetId)) {
-          echo "checked";
-        }
-      ?>>
-    </div>
+
   </form>
 
 
   <?php 
-  if($topicGet) {
+  if($topicId) {
     ?>
     
     <table class="input_table table-fixed w-full">
@@ -469,12 +472,41 @@ include($path."/header_tailwind.php");
         
           <td class="align-top">
             <div class="show_<?=$row['id'];?>">
-              <?=htmlspecialchars($row['topic']);?><br>
-              <?= (/*$row['topic_order']  != "0" ? */htmlspecialchars($row['userTopicOrder']) /*: ""*/)?>
-              <?//=htmlspecialchars($row['topic_order'])?>
+              <?=htmlspecialchars($row['topicName']);?><br>
+              <?=htmlspecialchars($row['userTopicOrder'])?> 
             </div>
             <div class="hide hide_<?=$row['id'];?>">
-              <input type="text" name ="topic" value ="<?=htmlspecialchars($row['topic'])?>" style="width:100px;"></input>
+            <select name="topicId" class='w-full'>
+              <?php
+                  $topicPostSelect = null;
+                  if(isset($_POST['topicId'])) {
+                    $topicPostSelect = $_POST['topicId'];
+                  }
+                  if(isset($_GET['topicId'])) {
+                    $topicPostSelect = $_GET['topicId'];
+                  }
+                  foreach ($topics as $topic) {
+                    $indent = "";
+                    $disabled = "";
+                      if($topic['topicLevel'] =="0") {
+                        continue;
+                        $disabled = 'disabled="disabled"';
+
+                      } else if ($topic['topicLevel'] =="1") {
+                        continue;
+                        $indent = "&nbsp&nbsp";
+                        $disabled = 'disabled="disabled"';
+                      } else if ($topic['topicLevel'] =="2") {
+                        //$indent = "&nbsp&nbsp&nbsp&nbsp";
+                      }
+                    ?>
+                    <option class="w-10" value="<?=$topic['id']?>" <?=($topicPostSelect == $topic['id']) ? "selected":""?> <?=($topicGet == $topic['code']) ? "selected":""?> <?=$disabled?>><?=$indent.$topic['name']?></option>
+                    <?php
+                  }
+                ?>
+              </select>
+              <br>
+
               <input type="text" name ="topic_order" value ="<?=htmlspecialchars($row['topic_order'])?>" style="width:100px;"></input>
             </div>
             <p>
@@ -485,17 +517,20 @@ include($path."/header_tailwind.php");
             <div class="show_<?=$row['id'];?>">
               <?=htmlspecialchars($row['question']);?>
               <?php
-                    //CHANGING PATH FOR BEEHIVE LEARNING
                     if(!is_null($row['q_path'])) {
                       ?>
                       <img class = "mx-auto my-1 max-h-80" src= "https://www.thinkeconomics.co.uk<?=htmlspecialchars($row['q_path'])?>" alt = "<?=htmlspecialchars($row['q_alt'])?>">
                       <?php
                     }
-                    ?>
+
+                if($row['points'] != "") {
+                ?>
               <p>
                 Points: <?=$row['points']?>
               </p>
-              <?php
+                <?php
+                }
+
               if($row['type'] != "") {
                 ?>
               <p>
@@ -508,33 +543,25 @@ include($path."/header_tailwind.php");
             <div class= "hide hide_<?=$row['id'];?>">
               <textarea class="h-44" name ="question"><?=htmlspecialchars($row['question'])?></textarea>
               <br>
-              <?php
-              if(!is_null($showAssetId)) {
-                ?>
+              <div class="<?=is_null($showAssetId)?"hidden":""?>">
                 <label for="qA_<?=$row['id'];?>">Question Asset Id:</label><br>
                 <input id="qA_<?=$row['id'];?>" type="number" name="questionAsset" value="<?=$row['questionAssetId']?>">
                 <br>
-              <?php
-              }
-              ?>
+              </div>
               <label for = "points_<?=$row['id'];?>" >Points:</label><br>
               <input id="points_<?=$row['id'];?>" name ="points" type="number" value="<?=$row['points']?>"</input>
               <br>
               <label for = "keyword<?=$row['id'];?>" >Keywords:</label><br>
               <textarea id="keyword<?=$row['id'];?>" name ="type" type="text" ><?=$row['type']?></textarea>
             </div>
+              <div class="<?=is_null($showFlashCards)?"hidden":""?>">
+                <input class="w-4" id="flashCard_Update_<?=$row['id'];?>" type="checkbox" name ="flashCard" value="1" <?=($row['flashCard']==1) ? "checked" : ""?> disabled>
+                <label for="flashCard_Update_<?=$row['id'];?>">flashCard</label>
+              </div>
             <?php
-            if(!is_null($showFlashCards)) {
-              ?>
-              <input class="w-4" id="flashCard_Update_<?=$row['id'];?>" type="checkbox" name ="flashCard" value="1" <?=($row['flashCard']==1) ? "checked" : ""?> disabled>
-              <label for="flashCard_Update_<?=$row['id'];?>">flashCard</label>
-            <?php
+            if(isset($_GET['test'])) {
+              print_r($row);
             }
-
-                  if(isset($_GET['test'])) {
-                    print_r($row);
-                  }
-
             ?>
           </td>
 
@@ -554,14 +581,10 @@ include($path."/header_tailwind.php");
               <label class="hide" for = "model_answer<?=$row['id'];?>">Model Answer:</label>
               <textarea class="h-44" id = "model_answer<?=$row['id'];?>" name ="model_answer"><?=htmlspecialchars($row['model_answer'])?></textarea>
               <br>
-              <?php
-              if(!is_null($showAssetId)) {
-                ?>
-              <label for ="asset_id<?=$row['id'];?>">Asset ID:</label><br>
-              <input id="asset_id<?=$row['id'];?>" type="number" name="answerAsset" value="<?=$row['answerAssetId']?>">
-              <?php
-              }
-              ?>
+              <div class="<?=is_null($showAssetId)?"hidden":""?>">
+                <label for ="asset_id<?=$row['id'];?>">Asset ID:</label><br>
+                <input id="asset_id<?=$row['id'];?>" type="number" name="answerAsset" value="<?=$row['answerAssetId']?>">
+              </div>    
             </div>
               
           </td>
@@ -695,39 +718,18 @@ function addRow() {
   
   cell0.innerHTML += '<label for="question_'+inst+'">Question:</label><br><textarea type="text" id ="question_'+inst+'" name="question_'+inst+'" class="w-full h-44" required></textarea><br>';
   
-  <?php
-  if(!is_null($showAssetId)) {
-    ?>
-    cell0.innerHTML += '<label for="qusetionAsset_'+inst+'">Question Asset:</label><br><input class= "w-1/2"type="number" step="1" id ="qusetionAsset_'+inst+'" name="questionAsset_'+inst+'"><br>';
-  <?php
-  }
-  ?>
-  
+  cell0.innerHTML += '<div class="<?=is_null($showAssetId)?"hidden":""?>"><label for="qusetionAsset_'+inst+'">Question Asset:</label><br><input class= "w-1/2"type="number" step="1" id ="qusetionAsset_'+inst+'" name="questionAsset_'+inst+'"><br></div>';
+
   cell0.innerHTML += '<label for="points_'+inst+'">Points:<br></label><input  type="number" id ="points_'+inst+'" name="points_'+inst+'"></input><br><label for="type_'+inst+'">Keywords/Type:</label><input type="text" id ="type_'+inst+'" name="type_'+inst+'"></input><br>';
-  
-  <?php
-  if(!is_null($showFlashCards)) {
-    ?>
-    cell0.innerHTML += '<input class = "w-4" type= "checkbox" id="flashCardInput_'+inst+'" value="1" name = "flashCard_'+inst+'"><label for="flashCardInput_'+inst+'">flashCard</label><br>';
-  <?php
-  }
-  ?>
+
+  cell0.innerHTML += '<div <?=is_null($showFlashCards)?'class="hidden"':""?>><input class = "w-4" type= "checkbox" id="flashCardInput_'+inst+'" value="1" name = "flashCard_'+inst+'" <?=is_null($showFlashCards)?'checked':""?>><label for="flashCardInput_'+inst+'">flashCard</label><br></div>';
 
   cell0.innerHTML += '<label for="topic_order_'+inst+'">Topic Order:</label><br><input class=" p-1" type="number" step="1" name="topic_order_'+inst+'" id="topic_order_'+inst+'" value = "'+questionCount+'" onchange="changeOrder(this)"></input>';
   
   cell1.innerHTML = '<label for="model_answer_'+inst+'">Model Answer/Mark Scheme:</label><br><textarea class="h-36" type="text" id ="model_answer_'+inst+'" name="model_answer_'+inst+'"></textarea><br><button class="w-1/4 block rounded border border-black bg-pink-200 mt-2 p-0" type="button" onclick="arrowAdd('+inst+');">→</button>';
-
-  <?php
-  if(!is_null($showAssetId)) {
-    ?>
   
-  cell1.innerHTML += '<label for="answerAsset_'+inst+'">Answer Asset:</label><br><input type="number" id ="answerAsset_'+inst+'" name="answerAsset_'+inst+'">';
+  cell1.innerHTML += '<div class="<?=is_null($showAssetId)?"hidden":""?>"><label for="answerAsset_'+inst+'">Answer Asset:</label><br><input type="number" id ="answerAsset_'+inst+'" name="answerAsset_'+inst+'"></div>';
 
-  <?php
-  }
-  ?>
-
-  
 
   cell2.innerHTML = "<button class='w-full bg-pink-300 rounded border border-black mb-1' type ='button' onclick='hideRow(this);'>Remove</button>"
   cell2.innerHTML += "<input name='active_entry_"+inst+"' class='w-full' type='hidden' value='1'>";
