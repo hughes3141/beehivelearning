@@ -17,6 +17,17 @@ include($path."/php_header.php");
 //include($path."/php_functions.php");
 include ($path."/header_tailwind.php");
 
+//Set img path:
+
+/**
+ * images find the path set via $question['q_path'] etc.
+ * This is assumed to be in root foler if thinkeonomics
+ * If other site: udpate variable $imgSourcePathPrefix to 
+ */
+
+ $imgSourcePathPrefix = "";
+ $imgSourcePathPrefix = "https://www.thinkeconomics.co.uk";
+
 
 //Get topics as GET variables
 $topics = null;
@@ -32,6 +43,11 @@ if(isset($_GET['topics'])) {
 $questionNosBool = 0;
 if(isset($_GET['questionNos'])) {
   $questionNosBool = 1;
+}
+
+$subjectId = null;
+if(!empty($_GET['subjectId'])) {
+  $subjectId = $_GET['subjectId'];
 }
 
 $topicShowBool = 0;
@@ -53,7 +69,7 @@ The following function calls rows from saq_question_bank_3 with the following pa
   -subjectId = 1 (Economics)
   -userId = 1
 */
-$questions = getSAQQuestions(null,  $topics, 1, 1, 1);
+$questions = getSAQQuestions(null,  $topics, 1, $subjectId, 1);
 
 if(isset($_GET['qId'])) {
   $questions = getSAQQuestions($_GET['qId']);
@@ -156,12 +172,12 @@ GET Variables:
             
             if($question['img'] != "") {
               ?>
-                  <img class = "mx-auto object-center " src= "<?=htmlspecialchars($question['img'])?>" alt = "">
+                  <img class = "mx-auto object-center " src= "<?=$imgSourcePathPrefix.htmlspecialchars($question['img'])?>" alt = "">
             <?php
               }
             if($question['q_path'] != "") {
               ?>
-              <img class = "mx-auto object-center " src= "<?=htmlspecialchars($question['q_path'])?>" alt = "<?=htmlspecialchars($question['q_alt'])?>">
+              <img class = "mx-auto object-center " src= "<?=$imgSourcePathPrefix.htmlspecialchars($question['q_path'])?>" alt = "<?=htmlspecialchars($question['q_alt'])?>">
               <?php
             }
 
@@ -173,13 +189,13 @@ GET Variables:
             <?php
 
           if($question['answer_img'] != "") {
-            ?><img class = "object-center " src= "<?=htmlspecialchars($question['answer_img'])?>" alt = "<?=htmlspecialchars($question['answer_img_alt'])?>">
+            ?><img class = "object-center " src= "<?=$imgSourcePathPrefix.htmlspecialchars($question['answer_img'])?>" alt = "<?=htmlspecialchars($question['answer_img_alt'])?>">
             <?php
           }
 
           if($question['a_path'] != "") {
             ?>
-              <img class = "object-center " src= "<?=htmlspecialchars($question['a_path'])?>" alt = "<?=htmlspecialchars($question['a_alt'])?>">
+              <img class = "object-center " src= "<?=$imgSourcePathPrefix.htmlspecialchars($question['a_path'])?>" alt = "<?=htmlspecialchars($question['a_alt'])?>">
             <?php
           }
           

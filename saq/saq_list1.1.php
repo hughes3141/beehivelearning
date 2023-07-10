@@ -55,17 +55,28 @@ $style_input = "
 $showFlashCards = 1;
 $showAssetId = 1;
 
-//BEEHIVE ONLY: SET SHOWFLASHCARDS AND ASSETID SHOW TO NULL:
-
-$showFlashCards = null;
-$showAssetId = null;
-
 if(isset($_GET['noFlashCard'])) {
   $showFlashCards = null; 
 }
 if(isset($_GET['noAssetInput'])) {
   $showAssetId = null;
 }
+
+$showFlashCards = null;
+$showAssetId = null;
+
+
+//Set img path:
+
+/**
+ * images find the path set via $question['q_path'] etc.
+ * This is assumed to be in root foler if thinkeonomics
+ * If other site: udpate variable $imgSourcePathPrefix to 
+ */
+
+ $imgSourcePathPrefix = "";
+ $imgSourcePathPrefix = "https://www.thinkeconomics.co.uk";
+
 
 
 //assetSubmit = "";
@@ -81,11 +92,12 @@ if (isset($_POST['submit'])) {
   //$topic = $_POST['topic'];
   $topicId = $_POST['topicId'];
 
-  $topic = getTopicsGeneralList($topicId)[0]['code'];
+  $topic = getTopicsAllList($topicId)[0]['code'];
 
 
   $subjectId = $_POST['subjectId'];
   $levelId = $_POST['levelId'];
+  $examBoardId = $_POST['examBoardId'];
 
   $userCreate = $_SESSION['userid'];
   $timeAdded = date("Y-m-d H:i:s");
@@ -170,11 +182,20 @@ if(isset($_GET['topic'])) {
 }
 
 $flashCard = null;
+
 $subjectId = null;
+$levelId = null;
+$examBoardId = null;
+$topicId = null;
+
+
+
 $userCreate = null;
 $type = null;
 
-$topicId = null;
+$root = 1;
+
+
 
 //$userPreferredSubject comes from a user's information.
 if(isset($userInfo['userPreferredSubjectId'])) {
@@ -182,6 +203,15 @@ if(isset($userInfo['userPreferredSubjectId'])) {
 } else {
   $userPreferredSubject = 1;
 }
+
+if(isset($userInfo['userPreferredExamBoardId'])) {
+  $userPreferredExamBoard = $userInfo['userPreferredExamBoardId'];
+} else {
+  $userPreferredExamBoard = 1;
+}
+
+$subjectId = $userPreferredSubject;
+//$examBoardId = $userPreferredExamBoard;
 
 if(isset($_GET['type'])) {
   $type = $_GET['type'];
@@ -196,15 +226,45 @@ if(isset($_GET['subjectId'])) {
 if(isset($_POST['subjectId'])) {
   $subjectId = $_POST['subjectId'];
 }
-if(isset($_GET['userCreate'])) {
-  $userCreate = $_GET['userCreate'];
+
+if(isset($_GET['levelId'])) {
+  $levelId = $_GET['levelId'];
 }
+if(isset($_POST['levelId'])) {
+  $levelId = $_POST['levelId'];
+}
+
+if(isset($_GET['examBoardId'])) {
+  $examBoardId = $_GET['examBoardId'];
+  $root = 0;
+}
+if(isset($_POST['examBoardId'])) {
+  $examBoardId = $_POST['examBoardId'];
+  $root = 0;
+}
+
 
 if(isset($_GET['topicId'])) {
   $topicId = $_GET['topicId'];
 }
+if(isset($_POST['topicId'])) {
+  $topicId = $_POST['topicId'];
+}
+
+
+
+if(isset($_GET['userCreate'])) {
+  $userCreate = $_GET['userCreate'];
+}
+
+
+
+if(is_null($showFlashCards)) {
+  $flashCard = 1;
+}
 
 $questions = getSAQQuestions(null, $topicGet, $flashCard, $subjectId, $userCreate, $type, $userId, $topicId);
+
 
 //$questions = getSAQQuestions(null, null, null, null, null, null, null, null);
 
@@ -216,21 +276,39 @@ if(isset($_GET['topic'])) {
 $subjects = getOutputFromTable("subjects", null, "name");
 $levels =  getOutputFromTable("subjects_level", null, "name");
 
+$examBoards = getExamBoards();
+
 //$topics = getTopicList("saq_question_bank_3", "topic", null, $flashCard, $userPreferredSubject);
 
 //Use getColumnListFromTable becuase it returns only non-blank values:
 
 //$subjectSelector is the subjectId that is either determined by (1) user preference or (2) $subjectId;
+
 $subjectSelector = $userPreferredSubject;
+$examBoardSelector = $userPreferredExamBoard;
+$levelSelector = 1;
+$topicSelector = null;
+
 if(!is_null($subjectId)) {
   $subjectSelector = $subjectId;
 }
 
-$levelId = null;
+if(!is_null($examBoardId)) {
+  $examBoardSelector = $examBoardId;
+}
+if(!is_null($levelId)) {
+  $levelSelector = $levelId;
+}
+if(!is_null($topicId)) {
+  $topicSelector = $topicId;
+}
+
+
+
 
 //$topics = getColumnListFromTable("saq_question_bank_3", "topic", null, $subjectSelector, null, null, $flashCard);
 
-$topics = getTopicsGeneralList(null, null, $subjectSelector, $levelId, null);
+$topics = getTopicsAllList(null, $root, $examBoardId, $subjectId);
 
 
 include($path."/header_tailwind.php");
@@ -259,19 +337,24 @@ include($path."/header_tailwind.php");
       echo "POST:<br>";
       var_dump($_POST);
     }
+
+
+    /*
     echo "<br><br>User Info:<br>";
-    print_r($userInfo);
+    //print_r($userInfo);
     echo "<br><br>Subjects:<br>";
-    print_r($subjects);
+    //print_r($subjects);
     echo "<br><br>Levels:<br>";
-    print_r($levels);
+    //print_r($levels);
+
+    */
+
     echo "<br><br>Topics:<br>";
     echo count($topics)."<br>";
-    print_r($topics);
+    //print_r($topics);
+    
     
   }
-
-
 
 ?>
 
@@ -280,7 +363,7 @@ include($path."/header_tailwind.php");
   <form method="post" id="new_question_post_form">
     <div class="my-2">
         <label for ="subjectSelect">Subject:</label>
-        <select class="inputProperties" id="subjectSelect" name = "subjectId" onchange="changeSubject(this);">
+        <select class="inputProperties" id="subjectSelect" name = "subjectId" onchange="changeInput(this, 'subjectSelectGet');">
           <?php
             foreach ($subjects as $subject) {
                 ?>
@@ -289,21 +372,23 @@ include($path."/header_tailwind.php");
             }
             ?>
         </select>
-        <select class="inputProperties" id="levelSelect" name = "levelId">
+        <select class="inputProperties" id="levelSelect" name = "levelId" onchange="changeInput(this, 'levelSelectGet');">
           <?php
             foreach ($levels as $subject) {
                 ?>
-                <option value="<?=$subject['id'];?>" <?php
-                  if(isset($_POST['levelId'])) {
-                    if($subject['id'] == $_POST['levelId']) {
-                      echo "selected";
-                    }
-                    
-                  }
-                  else if ($subject['id'] == $userPreferredSubject) {
-                    echo "selected";
-                  }              
-                ?> > <?=htmlspecialchars($subject['name']);?></option>
+                <option value="<?=$subject['id'];?>" <?=($subject['id'] == $levelSelector) ? "selected" : ""?> > <?=htmlspecialchars($subject['name']);?></option>
+            <?php
+            }
+            ?>
+        </select>
+
+
+        <select class="inputProperties" id="boardSelect" name = "examBoardId" onchange="changeInput(this, 'examBoardSelectGet');"">
+          <option></option>
+          <?php
+            foreach ($examBoards as $subject) {
+                ?>
+                <option value="<?=$subject['id'];?>" <?=($subject['id'] == $examBoardId) ? "selected" : ""?> > <?=htmlspecialchars($subject['name']);?></option>
             <?php
             }
             ?>
@@ -312,20 +397,15 @@ include($path."/header_tailwind.php");
           if(count($topics)>0) {
             ?>
             <label for="topic">Topic:</label>
-            <select class="inputProperties w-20 " id ="topic" name="topicId" class="topicSelector" onchange="changeTopic(this);">
+            <select class="inputProperties w-20 " id ="topic" name="topicId" class="topicSelector" onchange="changeInput(this, 'topicGet');">
               <?php
-                $topicPostSelect = null;
-                if(isset($_POST['topicId'])) {
-                  $topicPostSelect = $_POST['topicId'];
-                }
-                if(isset($_GET['topicId'])) {
-                  $topicPostSelect = $_GET['topicId'];
-                }
                 foreach ($topics as $topic) {
+                  
                   $indent = "";
                   $disabled = "";
+                  /*
                     if($topic['topicLevel'] =="0") {
-                      $disabled = 'disabled="disabled"';
+                      //$disabled = 'disabled="disabled"';
 
                     } else if ($topic['topicLevel'] =="1") {
                       $indent = "&nbsp&nbsp";
@@ -333,8 +413,9 @@ include($path."/header_tailwind.php");
                     } else if ($topic['topicLevel'] =="2") {
                       $indent = "&nbsp&nbsp&nbsp&nbsp";
                     }
+                    */
                   ?>
-                  <option class="" value="<?=$topic['id']?>" <?=($topicPostSelect == $topic['id']) ? "selected":""?> <?=($topicGet == $topic['code']) ? "selected":""?> <?=$disabled?>><?=$indent.$topic['name']?></option>
+                  <option class="" value="<?=$topic['id']?>" <?=($topicSelector == $topic['id']) ? "selected":""?> <?=($topicGet == $topic['code']) ? "selected":""?> <?=$disabled?>><?=$topic['code']?> <?=$indent.$topic['name']?></option>
                   <?php
                 }
               ?>
@@ -355,9 +436,11 @@ include($path."/header_tailwind.php");
       <button type="button" class= "w-full rounded bg-sky-300 hover:bg-sky-200 border border-black mb-2 mt-2" onclick="addRow()">Add Row</button>
     </p>
     <p>
-      <input class="w-full bg-pink-300 rounded border border-black mb-1" type="submit" name="submit" value="Create Question"></input>
+      <button class="w-full bg-pink-300 rounded border border-black mb-1">Create Question</button>
     </p>
     <input type="hidden" name="questionsCount" id="questionsCount">
+    <input class="w-full bg-pink-300 rounded border border-black mb-1" type="hidden" name="submit" value="Create Question">
+    
   </form>
   
   
@@ -380,17 +463,17 @@ include($path."/header_tailwind.php");
           <?php
             foreach ($levels as $subject) {
                 ?>
-                <option value="<?=$subject['id'];?>" <?php
-                  if(isset($_POST['levelId'])) {
-                    if($subject['id'] == $_POST['levelId']) {
-                      echo "selected";
-                    }
-                    
-                  }
-                  else if ($subject['id'] == $userPreferredSubject) {
-                    echo "selected";
-                  }              
-                ?> > <?=htmlspecialchars($subject['name']);?></option>
+                <option value="<?=$subject['id'];?>" <?=($subject['id'] == $levelSelector) ? "selected" : ""?>><?=htmlspecialchars($subject['name']);?></option>
+            <?php
+            }
+            ?>
+        </select>
+
+        <select id="examBoardSelectGet" name = "examBoardId">
+        <?php
+            foreach ($examBoards as $subject) {
+                ?>
+                <option value="<?=$subject['id'];?>" <?=($subject['id'] == $examBoardSelector) ? "selected" : ""?> > <?=htmlspecialchars($subject['name']);?></option>
             <?php
             }
             ?>
@@ -410,6 +493,7 @@ include($path."/header_tailwind.php");
             foreach ($topics as $topic) {
               $indent = "";
               $disabled = "";
+              /*
                 if($topic['topicLevel'] =="0") {
                   $disabled = 'disabled="disabled"';
 
@@ -419,19 +503,21 @@ include($path."/header_tailwind.php");
                 } else if ($topic['topicLevel'] =="2") {
                   $indent = "&nbsp&nbsp&nbsp&nbsp";
                 }
+                */
               ?>
-              <option class="" value="<?=$topic['id']?>" <?=($topicPostSelect == $topic['id']) ? "selected":""?> <?=($topicGet == $topic['code']) ? "selected":""?> <?=$disabled?>><?=$indent.$topic['name']?></option>
+              <option class="" value="<?=$topic['id']?>" <?=($topicPostSelect == $topic['id']) ? "selected":""?> <?=($topicGet == $topic['code']) ? "selected":""?> <?=$disabled?>><?=$topic['code']?> <?=$indent.$topic['name']?></option>
               <?php
             }
           ?>
       </select>
-      <span class="<?=is_null($showFlashCards)?"hidden":""?>">
+      <div class="<?=is_null($showFlashCards)?"hidden":""?>">
         <input id="flashcard_select" type="checkbox" name="flashCard" value="1" <?=(isset($_GET['flashCard'])) ? "checked":""?>>
         <label for="flashcard_select">FlashCards Only</label>
-      </span>
+      </div>
 
 
-      <input class="bg-pink-200 px-2" type="submit" value="Choose Topic">
+      <button class="bg-pink-200 px-2 border border-black rounded">Choose Topic</button>
+      <input type="hidden" value="Choose Topic">
       <div class="hidden">
         <input type="checkbox" value="1" name="noFlashCard" <?=is_null($showFlashCards)?"checked":""?>>
         <input type="checkbox" value="1" name="noAssetInput" <?=is_null($showAssetId)?"checked":""?>>
@@ -472,7 +558,9 @@ include($path."/header_tailwind.php");
         
           <td class="align-top">
             <div class="show_<?=$row['id'];?>">
+              <!--
               <?=htmlspecialchars($row['topicName']);?><br>
+              -->
               <?=htmlspecialchars($row['userTopicOrder'])?> 
             </div>
             <div class="hide hide_<?=$row['id'];?>">
@@ -515,11 +603,12 @@ include($path."/header_tailwind.php");
           </td>
           <td class="align-top">
             <div class="show_<?=$row['id'];?>">
-              <?=htmlspecialchars($row['question']);?>
+              <div class="whitespace-pre-line"><?=htmlspecialchars($row['question']);?></div>
+              
               <?php
                     if(!is_null($row['q_path'])) {
                       ?>
-                      <img class = "mx-auto my-1 max-h-80" src= "https://www.thinkeconomics.co.uk<?=htmlspecialchars($row['q_path'])?>" alt = "<?=htmlspecialchars($row['q_alt'])?>">
+                      <img class = "mx-auto my-1 max-h-80" src= "<?=$imgSourcePathPrefix.htmlspecialchars($row['q_path'])?>" alt = "<?=htmlspecialchars($row['q_alt'])?>">
                       <?php
                     }
 
@@ -572,7 +661,7 @@ include($path."/header_tailwind.php");
               <?php
                     if(!is_null($row['a_path'])) {
                       ?>
-                      <img class = "mx-auto my-1 max-h-80" src= "https://www.thinkeconomics.co.uk<?=htmlspecialchars($row['a_path'])?>" alt = "<?=htmlspecialchars($row['a_alt'])?>">
+                      <img class = "mx-auto my-1 max-h-80" src= "<?=$imgSourcePathPrefix.htmlspecialchars($row['a_path'])?>" alt = "<?=htmlspecialchars($row['a_alt'])?>">
                       <?php
                     }
                     ?>
@@ -736,7 +825,7 @@ function addRow() {
 
   
 
-  sourceAmend(inst)
+  sourceAmend(inst);
   
   document.getElementById("questionsCount").value = tableLength;
 
@@ -753,9 +842,12 @@ function changeOrder(x) {
 function hideRow(button) {
   var row = button.parentElement.parentElement;
   var input = button.parentElement.childNodes[1];
+  var question_input = row.children[0].children[2];
   console.log(row);
+  console.log(question_input);
   console.log(input);
   row.style.display = "none";
+  question_input.removeAttribute('required');
   input.value='0';
 }
 
@@ -778,6 +870,26 @@ function changeTopic(input) {
   var topicChangeForm = document.getElementById("database_get_form");
   var changeTo = input.value;
   var topicChangeSelect = document.getElementById("topicGet");
+  //console.log(topicChangeSelect);
+  //console.log(changeTo);
+  topicChangeSelect.value=changeTo;
+  topicChangeForm.submit();
+}
+
+function changeExamBoard(input) {
+  var topicChangeForm = document.getElementById("database_get_form");
+  var changeTo = input.value;
+  var topicChangeSelect = document.getElementById("examBoardSelectGet");
+  //console.log(topicChangeSelect);
+  //console.log(changeTo);
+  topicChangeSelect.value=changeTo;
+  topicChangeForm.submit();
+}
+
+function changeInput(input, getSelectElement) {
+  var topicChangeForm = document.getElementById("database_get_form");
+  var changeTo = input.value;
+  var topicChangeSelect = document.getElementById(getSelectElement);
   //console.log(topicChangeSelect);
   //console.log(changeTo);
   topicChangeSelect.value=changeTo;
