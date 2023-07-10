@@ -20,7 +20,7 @@ include ($path."/header_tailwind.php");
 //Set path of home folder:
 
 $homeFolder = "thinkeconomics";
-$homeFolder = "public_html"
+$homeFolder = "public_html";
 
 //Very little file that only contains the vairabble $version to be ouput to database.
 include ($path."/../".$homeFolder."/user/privacy_version.php");
