@@ -32,7 +32,7 @@ include($path."/php_header.php");
 //Set path of home folder:
 
 $homeFolder = "thinkeconomics";
-$homeFolder = "public_html"
+$homeFolder = "public_html";
 
 
 //Very little file that only contains the vairabble $version to be ouput to database.
