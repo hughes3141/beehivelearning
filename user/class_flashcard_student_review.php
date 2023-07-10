@@ -79,7 +79,7 @@ foreach($results as $array) {
 
 <div class="container mx-auto px-4 mt-20 lg:mt-32 xl:mt-20 lg:w-3/4">
   <h1 class="font-mono text-2xl bg-pink-400 pl-1">Flash Card Review</h1>
-  <div class="container mx-auto px-0 mt-2 bg-white text-black">
+  <div class="container mx-auto px-0 mt-2 bg-white text-black py-1">
   <?php
   
   
@@ -127,13 +127,13 @@ foreach($results as $array) {
     <?php
     if(!empty($groupId)) {
       ?>
-        <table class="table-fixed border border-black">
+        <table class="table-fixed border border-black m-2">
           <tr>
-            <th class="border border-black">Name</th>
-            <th class="border border-black">Count</th>
-            <th class="border border-black">Dates</th>
-            <th class="border border-black">Average Time</th>
-            <th class="border border-black">Date Summary</th>
+            <th class="border border-black p-1">Name</th>
+            <th class="border border-black p-1">Count</th>
+            <th class="border border-black p-1">Dates</th>
+            <th class="border border-black p-1">Average Time</th>
+            <th class="border border-black p-1">Date Summary</th>
           </tr>
           <?php
             foreach($students as $student) {
@@ -141,9 +141,9 @@ foreach($results as $array) {
               //print_r(flashCardSummary($id, "count_category"));
               ?>
               <tr>
-                <td class="border border-black"><?=$student['name_first']." ".$student['name_last']?></td>
-                <td class="border border-black"><?=flashCardSummary($id, "count")[0]['count']?></td>
-                <td class="border border-black"> <?php
+                <td class="border border-black p-1"><?=$student['name_first']." ".$student['name_last']?></td>
+                <td class="border border-black p-1"><?=flashCardSummary($id, "count")[0]['count']?></td>
+                <td class="border border-black p-1"> <?php
                   $flashcards = flashCardSummary($id, "count_category");
                     foreach($flashcards as $array) {
                       if ($array['gotRight']==0) {
@@ -156,8 +156,8 @@ foreach($results as $array) {
                     echo $array['count']."<br>";
                   }
                 ?></td>
-                <td class="border border-black"><?=round(flashCardSummary($id, "average")[0]['avg'])?></td>
-                <td class="border border-black">
+                <td class="border border-black p-1"><?=round(flashCardSummary($id, "average")[0]['avg'])?></td>
+                <td class="border border-black p-1">
                   <div class="grid grid-cols-4">
                   <?php
                   $flashcards = flashCardSummary($id, "count_by_date");

@@ -660,6 +660,10 @@ textarea, input, select {
   margin: 2rem;
 }
 
+.m-1 {
+  margin: 0.25rem;
+}
+
 .mx-1 {
   margin-left: 0.25rem;
   margin-right: 0.25rem;
