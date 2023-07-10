@@ -77,7 +77,19 @@ include "../header_tailwind.php";
               </p>
           */
         ?>
-            <h2 class="font-mono text-lg bg-pink-200 pl-1">Admin</h2>
+            <h2 class="font-mono text-lg bg-pink-200 pl-1">FlashCard Review</h2> 
+              <p class="ml-2 hover:bg-sky-100">
+                <a class ="block" href="/user/class_flashcard_review.php">General Summary by Class</a>
+              </p>
+              <p class="ml-2 hover:bg-sky-100">
+                <a class ="block" href="/user/class_flashcard_student_review.php">User Summary by Class</a>
+              </p>
+            
+            <h2 class="font-mono text-lg bg-pink-200 pl-1">Question Management</h2> 
+              <p class="ml-2 hover:bg-sky-100">
+                <a class ="block" href="/saq/saq_list1.1.php">Upload/Update Questions</a>
+              </p>
+            <h2 class="font-mono text-lg bg-pink-200 pl-1">Class Admin</h2>
 
               <p class="ml-2 hover:bg-sky-100">
                 <a class ="block" href="/user/school_registration.php">Link Account to Your School</a>
@@ -95,10 +107,7 @@ include "../header_tailwind.php";
                 <a class ="block" href="/user/user_manager.php">Manage Users</a>
               </p>
 
-              <h2 class="font-mono text-lg bg-pink-200 pl-1">Question Management</h2> 
-            <p class="ml-2 hover:bg-sky-100">
-                <a class ="block" href="/saq/saq_list1.1.php">Upload/Update Questions</a>
-              </p>
+              
 
       <?php 
         }

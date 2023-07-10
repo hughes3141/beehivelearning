@@ -117,36 +117,43 @@ foreach($results as $array) {
       <br>
       <input type="submit" value="Select Group" class="p-1 w-full bg-pink-300 text-white hover:bg-pink-200">
     </form>
-    <table class="table-fixed">
-      <tr>
-        <th>Topic</th>
-        <th>Question</th>
-        <th>Responses</th>
-      </tr>
-      <?php
-      foreach($results as $array) {
-        ?>
-        <tr>
-          <td><?=$array['topic']?></td>
-          <td><?=$array['question']?>
-            <?php
-              if($array['img'] != ""){
-                ?>
-                <img src = "<?=$array['img']?>" class="w-auto">
-                <?php
-              }
-              ?>
-          </td>
-          <td>
-            Correct: <?=$array['correct']?> ||
-            Incorrect: <?=$array['wrong']?> ||
-            Don't Know: <?=$array['dontknow']?>
-          </td>
-        </tr>
-        <?php
-      }
+    <?php
+    if(!empty($groupId)) {
       ?>
-  </table>
+    
+        <table class="table-fixed">
+          <tr>
+            <th>Topic</th>
+            <th>Question</th>
+            <th>Responses</th>
+          </tr>
+          <?php
+          foreach($results as $array) {
+            ?>
+            <tr>
+              <td><?=$array['topic']?></td>
+              <td><?=$array['question']?>
+                <?php
+                  if($array['img'] != ""){
+                    ?>
+                    <img src = "<?=$array['img']?>" class="w-auto">
+                    <?php
+                  }
+                  ?>
+              </td>
+              <td>
+                Correct: <?=$array['correct']?> ||
+                Incorrect: <?=$array['wrong']?> ||
+                Don't Know: <?=$array['dontknow']?>
+              </td>
+            </tr>
+            <?php
+          }
+          ?>
+      </table>
+  <?php
+    }
+    ?>
   </div>
 </div>
 

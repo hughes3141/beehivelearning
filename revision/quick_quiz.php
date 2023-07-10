@@ -45,6 +45,11 @@ if(isset($_GET['questionNos'])) {
   $questionNosBool = 1;
 }
 
+$subjectId = null;
+if(!empty($_GET['subjectId'])) {
+  $subjectId = $_GET['subjectId'];
+}
+
 $topicShowBool = 0;
 if(isset($_GET['topicShow'])) {
   $topicShowBool = 1;
@@ -64,7 +69,7 @@ The following function calls rows from saq_question_bank_3 with the following pa
   -subjectId = 1 (Economics)
   -userId = 1
 */
-$questions = getSAQQuestions(null,  $topics, 1, 1, 1);
+$questions = getSAQQuestions(null,  $topics, 1, $subjectId, 1);
 
 if(isset($_GET['qId'])) {
   $questions = getSAQQuestions($_GET['qId']);
