@@ -50,6 +50,11 @@ if(!empty($_GET['subjectId'])) {
   $subjectId = $_GET['subjectId'];
 }
 
+$userIdSelect = null;  
+if(!empty($_GET['userId'])){
+  $userIdSelect = $_GET['userId'];
+}
+
 $topicShowBool = 0;
 if(isset($_GET['topicShow'])) {
   $topicShowBool = 1;
@@ -69,7 +74,7 @@ The following function calls rows from saq_question_bank_3 with the following pa
   -subjectId = 1 (Economics)
   -userId = 1
 */
-$questions = getSAQQuestions(null,  $topics, 1, $subjectId, 1);
+$questions = getSAQQuestions(null,  $topics, 1, $subjectId, $userIdSelect );
 
 if(isset($_GET['qId'])) {
   $questions = getSAQQuestions($_GET['qId']);
