@@ -37,7 +37,7 @@ include "header_tailwind.php";
           <p class="leading-normal text-2xl mb-8">
             We're here to make life easier for teachers and students. Let's get started!
           </p>
-          <a href="user/newuser.php">
+          <a href="user/newuser.php" class="mx-auto">
             <button class="mx-auto lg:mx-0 hover:underline bg-white text-gray-800 font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out">
               Sign Up
             </button>
